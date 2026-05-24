@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlirtSpot — Privacy Promise</title>
+
+  <!-- Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/svg+xml" href="icon_flirtspot.svg" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            spark: '#c850c0',
+            pulse: '#8B5CF6',
+            neon: '#4158D0',
+            glow: '#ff6b9d',
+            midnight: '#07060b',
+            surface: '#0f0d17',
+            surfaceLight: '#1a1726',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #07060b;
+      --fg: #f0ece4;
+      --muted: #7a7590;
+      --accent: #c850c0;
+      --accent2: #8B5CF6;
+      --glow: #ff6b9d;
+      --surface: #0f0d17;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      font-size: 22px;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* Reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+
+    /* Hero gradient mesh */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200, 80, 192, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #07060b 0%, #0f0d17 100%);
+    }
+
+    /* Dust animation */
+    @keyframes dustFloat {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { transform: translateY(-30px) scale(0.6); opacity: 0.4; }
+      100% { transform: translateY(-60px) scale(0); opacity: 0; }
+    }
+
+    .dust-particle {
+      animation: dustFloat 3s ease-out infinite;
+    }
+
+    /* Glow text */
+    .glow-text {
+      text-shadow: 0 0 40px rgba(200, 80, 192, 0.5), 0 0 80px rgba(200, 80, 192, 0.2);
+    }
+
+    /* Gradient border */
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), transparent, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    /* Accordion styling */
+    .privacy-accordion .collapse-content {
+      padding: 1rem 1.5rem 1.5rem;
+    }
+
+    /* Timeline */
+    .timeline-line {
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+    }
+
+    /* Badge glow */
+    .badge-glow {
+      box-shadow: 0 0 12px rgba(200, 80, 192, 0.3);
+    }
+
+    /* Stat card hover */
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(200, 80, 192, 0.15);
+    }
+
+    /* File to dust animation */
+    @keyframes fileToDust {
+      0% { opacity: 1; transform: scale(1); filter: blur(0); }
+      50% { opacity: 0.5; transform: scale(0.8); filter: blur(2px); }
+      100% { opacity: 0; transform: scale(0.3); filter: blur(8px); }
+    }
+
+    @keyframes dustAppear {
+      0% { opacity: 0; transform: scale(0); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.5) translateY(-40px); }
+    }
+
+    .file-dust-icon {
+      animation: fileToDust 3s ease-in-out infinite;
+    }
+
+    .dust-cloud circle {
+      animation: dustAppear 3s ease-out infinite;
+    }
+    .dust-cloud circle:nth-child(2) { animation-delay: 0.3s; }
+    .dust-cloud circle:nth-child(3) { animation-delay: 0.6s; }
+    .dust-cloud circle:nth-child(4) { animation-delay: 0.9s; }
+    .dust-cloud circle:nth-child(5) { animation-delay: 1.2s; }
+  </style>
+</head>
+<body class="bg-midnight font-body">
+
+  <!-- Fixed top-left icon (link back to home) -->
+  <a href="index.html" class="fixed top-4 left-4 z-50 hover:opacity-80 transition-opacity">
+    <img src="icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
+  </a>
+
+  <!-- Back to home -->
+  <a href="index.html" class="fixed top-4 right-4 z-50 text-white/50 hover:text-white/80 text-sm font-display tracking-wider transition-colors no-underline flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Home
+  </a>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 1: HERO — Real Anonymity -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <div class="hero-bg"></div>
+
+    <!-- Floating orbs -->
+    <div class="absolute w-[300px] h-[300px] rounded-full bg-spark/5 blur-[80px] top-[10%] left-[-5%] pointer-events-none"></div>
+    <div class="absolute w-[200px] h-[200px] rounded-full bg-pulse/5 blur-[80px] bottom-[10%] right-[-5%] pointer-events-none"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto py-24">
+      <!-- Shield animation -->
+      <div class="reveal mb-8 relative inline-block">
+        <svg width="120" height="120" viewBox="0 0 120 120" class="mx-auto">
+          <!-- Shield -->
+          <path d="M60 10 L100 30 L100 60 C100 85 80 105 60 115 C40 105 20 85 20 60 L20 30 Z" fill="none" stroke="#c850c0" stroke-width="2" opacity="0.6"/>
+          <path d="M60 20 L90 35 L90 58 C90 78 75 95 60 103 C45 95 30 78 30 58 L30 35 Z" fill="rgba(200,80,192,0.08)" stroke="#c850c0" stroke-width="1" opacity="0.3"/>
+          <!-- File turning to dust -->
+          <g transform="translate(48, 42)">
+            <rect x="0" y="0" width="24" height="30" rx="3" fill="#8B5CF6" opacity="0.6" class="file-dust-icon"/>
+          </g>
+          <!-- Dust cloud -->
+          <g class="dust-cloud" transform="translate(60, 65)">
+            <circle cx="0" cy="0" r="3" fill="#c850c0" opacity="0.6"/>
+            <circle cx="-12" cy="8" r="2" fill="#8B5CF6" opacity="0.5"/>
+            <circle cx="10" cy="12" r="2.5" fill="#c850c0" opacity="0.4"/>
+            <circle cx="-8" cy="18" r="1.5" fill="#8B5CF6" opacity="0.3"/>
+            <circle cx="14" cy="20" r="2" fill="#c850c0" opacity="0.2"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Creed badge -->
+      <div class="reveal inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-spark/20 bg-spark/5 text-sm text-spark font-display tracking-wider">
+        🛡️ Built to Forget
+      </div>
+
+      <!-- Headline -->
+      <h1 class="reveal reveal-delay-1 font-display font-800 text-4xl sm:text-5xl md:text-7xl leading-[0.95] tracking-tight mb-6">
+        Your Presence,<br>
+        <span class="glow-text text-transparent bg-clip-text bg-gradient-to-r from-spark via-pulse to-neon">Not Your Data.</span>
+      </h1>
+
+      <!-- Sub-headline -->
+      <p class="reveal reveal-delay-2 text-lg md:text-xl text-white/75 max-w-3xl mx-auto font-light leading-relaxed">
+        Most apps want to know who you are, where you've been, and who you talk to. We want the opposite. FlirtSpot is engineered to facilitate the moment and then vanish. <span class="text-white font-medium">No accounts. No tracking. No footprints.</span>
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 2: Three Pillars -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          The <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Zero-Persistence</span> Model
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg max-w-xl mx-auto">Three pillars that make data breaches impossible.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Pillar 1 -->
+        <div class="reveal stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm text-center">
+          <div class="text-5xl mb-5">👤</div>
+          <h3 class="font-display font-700 text-xl mb-3">Identity-Free</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            No phone numbers. No emails. No social logins. You are represented by a <span class="text-white/90 font-medium">UUID v7</span>—a time-ordered random string that contains zero personal information.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-ghost badge-sm text-white/40 font-mono">uuid-v7://a1b2c3d4</span>
+          </div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm text-center">
+          <div class="text-5xl mb-5">🛰️</div>
+          <h3 class="font-display font-700 text-xl mb-3">Tracking-Free</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            We don't use cookies, advertising IDs, or third-party analytics. We have <span class="text-white/90 font-medium">no idea where you go</span> after you put your phone away.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-secondary badge-sm badge-glow">Zero Logs</span>
+          </div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="reveal reveal-delay-2 stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm text-center">
+          <div class="text-5xl mb-5">🗑️</div>
+          <h3 class="font-display font-700 text-xl mb-3">History-Free</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            Your interactions live only in the temporary memory of your device. Once a session ends or a timer expires, <span class="text-white/90 font-medium">the data is purged</span>.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-accent badge-sm badge-glow">Encryption: Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 3: Technical Safeguards -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Technical <span class="text-transparent bg-clip-text bg-gradient-to-r from-pulse to-spark">Safeguards</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg">The deep dive into how we protect you.</p>
+      </div>
+
+      <div class="space-y-4 privacy-accordion">
+        <!-- Accordion 1: E2EE -->
+        <div class="reveal collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="privacy-accordion" checked="checked" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🔒</span>
+            End-to-End Encryption (E2EE)
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              Every selfie and message is encrypted with the recipient's public key <span class="text-white/90 font-medium">before it leaves your device</span>. Not even our relay server can see your face or read your words. You hold the only keys.
+            </p>
+            <div class="mt-4 p-3 rounded-lg bg-spark/5 border border-spark/10">
+              <code class="text-xs text-spark/80 font-mono">encrypted_payload = AES-256-GCM(plaintext, recipient_public_key)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion 2: Screenshot Blackout -->
+        <div class="reveal reveal-delay-1 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="privacy-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            Screenshot Blackout
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              We utilize Android's <span class="text-white/90 font-medium">FLAG_SECURE</span> system-level protection. This automatically disables screenshots and screen recordings on all ephemeral views. If someone tries to capture your photo, they get a solid black screen.
+            </p>
+          </div>
+        </div>
+
+        <!-- Accordion 3: RAM-Only Relay -->
+        <div class="reveal reveal-delay-2 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="privacy-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">📂</span>
+            RAM-Only Relay
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              Our server acts like a mirror, not a hard drive. It reflects your encrypted signal to nearby users using <span class="text-white/90 font-medium">temporary memory (RAM)</span>. Once you disconnect, that memory is instantly overwritten. We store nothing on a disk.
+            </p>
+          </div>
+        </div>
+
+        <!-- Accordion 4: Offline P2P -->
+        <div class="reveal reveal-delay-3 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="privacy-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">📡</span>
+            Offline P2P Mode
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              For maximum privacy, use our P2P mode. Your phone communicates directly with nearby devices <span class="text-white/90 font-medium">without touching the internet</span>. No server, no middleman, and zero possibility of remote logging.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 4: Ephemeral Lifecycle -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          The Ephemeral <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-glow">Lifecycle</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg">From capture to complete wipe in four steps.</p>
+      </div>
+
+      <div class="relative space-y-0">
+        <!-- Vertical line -->
+        <div class="hidden md:block absolute left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-spark via-pulse to-transparent"></div>
+
+        <!-- Step 1 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-display font-800 text-xl text-spark relative z-10">
+            1
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">The Capture</h3>
+            <p class="text-white/65 leading-relaxed">
+              You take a selfie. It is encrypted in the app's <span class="text-white/90 font-medium">private, non-shared cache</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-pulse/20 to-neon/10 border border-pulse/20 flex items-center justify-center font-display font-800 text-xl text-pulse relative z-10">
+            2
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">The Transit</h3>
+            <p class="text-white/65 leading-relaxed">
+              The selfie travels through an <span class="text-white/90 font-medium">encrypted tunnel</span> (Direct P2P or Relay).
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-glow/20 to-spark/10 border border-glow/20 flex items-center justify-center font-display font-800 text-xl text-glow relative z-10">
+            3
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">The View</h3>
+            <p class="text-white/65 leading-relaxed">
+              The recipient opens the selfie. A <span class="text-glow font-medium">60-second timer</span> begins.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-spark/5 border border-white/10 flex items-center justify-center font-display font-800 text-xl text-white/60 relative z-10">
+            4
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">The Wipe</h3>
+            <p class="text-white/65 leading-relaxed">
+              At 0 seconds, the file is <span class="text-white/90 font-medium">overwritten with random bits</span> and deleted from the device storage. It is gone from the universe.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 5: Compliance & Rights -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Compliance & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Your Rights</span>
+        </h2>
+      </div>
+
+      <div class="space-y-6">
+        <!-- GDPR -->
+        <div class="reveal alert shadow-lg bg-surface/80 border border-spark/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">🇪🇺</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">GDPR & CCPA Compliant by Design</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              We collect <span class="text-white/90 font-medium">zero PII</span> (Personally Identifiable Information). We cannot share or sell what we do not have.
+            </p>
+          </div>
+        </div>
+
+        <!-- Age -->
+        <div class="reveal reveal-delay-1 alert shadow-lg bg-surface/80 border border-pulse/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">🔞</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">16+ Safety</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              We verify age via Year of Birth during onboarding. This data <span class="text-white/90 font-medium">remains on your phone</span> and is never uploaded to a central database.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right to Disappear -->
+        <div class="reveal reveal-delay-2 alert shadow-lg bg-surface/80 border border-glow/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">👻</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">Right to Disappear</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              Want to leave? Simply <span class="text-white/90 font-medium">delete the app</span>. There are no accounts to "deactivate" and no "data archives" to request. You are already gone.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 6: Footer — Transparency -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="relative border-t border-white/5 bg-surface/50 py-16">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="reveal font-display font-800 text-3xl md:text-5xl mb-4">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Transparency</span> is Non-Negotiable
+      </h2>
+      <p class="reveal reveal-delay-1 text-white/65 mb-10 max-w-2xl mx-auto">We believe in trust through verifiable proof, not empty promises.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <!-- Open Source -->
+        <div class="reveal reveal-delay-1 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">🔓</div>
+          <h3 class="font-display font-700 mb-2">Open Source Architecture</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Our core encryption and proximity protocols are open for security audits. Trust but verify.</p>
+        </div>
+
+        <!-- Bug Bounty -->
+        <div class="reveal reveal-delay-2 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">🐛</div>
+          <h3 class="font-display font-700 mb-2">Bug Bounty</h3>
+          <p class="text-white/50 text-sm leading-relaxed">We reward researchers who help us find and fix security vulnerabilities.</p>
+        </div>
+
+        <!-- Contact -->
+        <div class="reveal reveal-delay-3 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">💬</div>
+          <h3 class="font-display font-700 mb-2">Contact</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Privacy queries can be directed to our local-first support team.</p>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-4 text-white/20 text-xs space-y-2">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
+          <a href="index.html" class="text-spark/60 hover:text-spark transition-colors">← Back to Home</a>
+          <span class="text-white/10">|</span>
+          <a href="whitepaper.html" class="text-spark/60 hover:text-spark transition-colors">Technical Whitepaper</a>
+          <span class="text-white/10">|</span>
+          <a href="terms.html" class="text-spark/60 hover:text-spark transition-colors">Terms of Service</a>
+        </div>
+        <p class="pt-4 text-white/10">© 2024 FlirtSpot. Built for the moment.</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Scroll Reveal JS -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

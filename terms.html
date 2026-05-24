@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlirtSpot — Terms of Service</title>
+
+  <!-- Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/svg+xml" href="icon_flirtspot.svg" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            spark: '#c850c0',
+            pulse: '#8B5CF6',
+            neon: '#4158D0',
+            glow: '#ff6b9d',
+            midnight: '#07060b',
+            surface: '#0f0d17',
+            surfaceLight: '#1a1726',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #07060b;
+      --fg: #f0ece4;
+      --muted: #7a7590;
+      --accent: #c850c0;
+      --accent2: #8B5CF6;
+      --glow: #ff6b9d;
+      --surface: #0f0d17;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      font-size: 22px;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* Reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+
+    /* Hero gradient mesh */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200, 80, 192, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #07060b 0%, #0f0d17 100%);
+    }
+
+    /* Glow text */
+    .glow-text {
+      text-shadow: 0 0 40px rgba(200, 80, 192, 0.5), 0 0 80px rgba(200, 80, 192, 0.2);
+    }
+
+    /* Gradient border */
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), transparent, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    /* Section divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), var(--accent2), transparent);
+      opacity: 0.2;
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+    }
+
+    /* Stat card hover */
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(200, 80, 192, 0.15);
+    }
+
+    /* Version badge */
+    .version-badge {
+      background: linear-gradient(135deg, rgba(200,80,192,0.15), rgba(139,92,246,0.15));
+      border: 1px solid rgba(200,80,192,0.2);
+    }
+
+    /* Accordion styling */
+    .terms-accordion .collapse-content {
+      padding: 1rem 1.5rem 1.5rem;
+    }
+  </style>
+</head>
+<body class="bg-midnight font-body">
+
+  <!-- Fixed top-left icon (link back to home) -->
+  <a href="index.html" class="fixed top-4 left-4 z-50 hover:opacity-80 transition-opacity">
+    <img src="icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
+  </a>
+
+  <!-- Back to home -->
+  <a href="index.html" class="fixed top-4 right-4 z-50 text-white/50 hover:text-white/80 text-sm font-display tracking-wider transition-colors no-underline flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Home
+  </a>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- HERO: The Social Contract -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+    <div class="hero-bg"></div>
+
+    <!-- Floating orbs -->
+    <div class="orb" style="width:300px;height:300px;background:rgba(200,80,192,0.06);top:5%;left:-5%;animation-delay:-2s;"></div>
+    <div class="orb" style="width:200px;height:200px;background:rgba(139,92,246,0.06);bottom:10%;right:-3%;animation-delay:-5s;"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto py-24">
+      <!-- Document icon -->
+      <div class="reveal mb-8">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="mx-auto">
+          <rect x="20" y="10" width="60" height="80" rx="8" fill="none" stroke="#c850c0" stroke-width="2" opacity="0.4"/>
+          <rect x="28" y="18" width="44" height="64" rx="4" fill="rgba(200,80,192,0.05)" stroke="#c850c0" stroke-width="1" opacity="0.2"/>
+          <line x1="35" y1="32" x2="65" y2="32" stroke="#8B5CF6" stroke-width="2" opacity="0.5"/>
+          <line x1="35" y1="42" x2="58" y2="42" stroke="#8B5CF6" stroke-width="1.5" opacity="0.3"/>
+          <line x1="35" y1="50" x2="62" y2="50" stroke="#8B5CF6" stroke-width="1.5" opacity="0.3"/>
+          <line x1="35" y1="58" x2="52" y2="58" stroke="#8B5CF6" stroke-width="1.5" opacity="0.3"/>
+          <!-- Scale icon -->
+          <circle cx="50" cy="72" r="6" fill="none" stroke="#c850c0" stroke-width="1.5" opacity="0.6"/>
+          <text x="50" y="76" text-anchor="middle" fill="#c850c0" font-size="10">⚖️</text>
+        </svg>
+      </div>
+
+      <!-- Badge -->
+      <div class="reveal inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full version-badge text-sm text-spark font-display tracking-wider">
+        ⚖️ Legal
+      </div>
+
+      <!-- Title -->
+      <h1 class="reveal reveal-delay-1 font-display font-800 text-4xl sm:text-5xl md:text-7xl leading-[0.95] tracking-tight mb-6">
+        Terms of <span class="glow-text text-transparent bg-clip-text bg-gradient-to-r from-spark via-pulse to-neon">Service</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="reveal reveal-delay-2 text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-light leading-relaxed mb-8">
+        Welcome to the world of ephemeral proximity. Our terms are simple: <span class="text-white font-medium">Respect the privacy of others, stay safe, and enjoy the moment.</span>
+      </p>
+
+      <!-- Meta -->
+      <div class="reveal reveal-delay-3 text-sm text-white/40">
+        Last Updated: <span class="text-white/60 font-medium">May 2024</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION: Eligibility & Age Verification -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal alert shadow-2xl bg-gradient-to-r from-red-500/10 via-spark/10 to-pulse/10 border border-red-500/30 rounded-2xl p-8">
+        <div class="flex-shrink-0 text-5xl">🔞</div>
+        <div>
+          <h3 class="font-display font-800 text-xl md:text-2xl mb-3 text-red-400">16+ Only</h3>
+          <p class="text-white/70 leading-relaxed">
+            FlirtSpot is strictly for users aged 16 and above. By providing your year of birth during onboarding, you certify that you are <span class="text-white font-medium">at least 16 years of age</span>. Any misrepresentation of age is a material breach of these terms.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION: The Rules of the Spot -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-10">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-mono font-700 text-sm text-spark">
+          01
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          The Rules of the <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Spot</span>
+        </h2>
+      </div>
+
+      <div class="space-y-4 terms-accordion">
+        <!-- No Harassment -->
+        <div class="reveal collapse collapse-plus bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="terms-accordion" checked="checked" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            No Harassment
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              FlirtSpot is built for <span class="text-white/90 font-medium">consensual attraction</span>. Using the platform for stalking, bullying, intimidation, or unwanted persistent behavior is strictly prohibited. Violations will result in immediate local ban.
+            </p>
+          </div>
+        </div>
+
+        <!-- Content Standards -->
+        <div class="reveal reveal-delay-1 collapse collapse-plus bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="terms-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            Content Standards
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              While communication is ephemeral and anonymous, the transmission of <span class="text-white/90 font-medium">illegal content, non-consensual imagery, or hate speech</span> is a violation of our service standards. We reserve the right to implement technical safeguards against such behavior.
+            </p>
+          </div>
+        </div>
+
+        <!-- Anti-Recording Policy -->
+        <div class="reveal reveal-delay-2 collapse collapse-plus bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="terms-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            Anti-Recording Policy
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              Our application implements <span class="text-white/90 font-medium">FLAG_SECURE</span> technical safeguards to block screenshots and screen recordings. Attempting to bypass these protections to record or distribute another user's ephemeral media is a <span class="text-spark font-medium">violation of privacy</span> and these terms.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION: Immutable Identity & Modes -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-10">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-pulse/20 to-neon/10 border border-pulse/20 flex items-center justify-center font-mono font-700 text-sm text-pulse">
+          02
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Immutable Identity & <span class="text-transparent bg-clip-text bg-gradient-to-r from-pulse to-spark">Modes</span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Permanent Gender Selection -->
+        <div class="reveal stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="text-3xl mb-4">🔒</div>
+          <h3 class="font-display font-700 text-lg mb-3">Permanent Gender Selection</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            During onboarding, you are required to select your gender. <span class="text-white/90 font-medium">This choice is immutable and cannot be changed.</span> This selection permanently defines your interaction mode (Man/Woman) within the FlirtSpot ecosystem.
+          </p>
+        </div>
+
+        <!-- Dual-Mode Connectivity -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="text-3xl mb-4">📡</div>
+          <h3 class="font-display font-700 text-lg mb-3">Dual-Mode Connectivity</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            The app facilitates connections via <span class="text-pulse font-medium">Relay Mode</span> (Server-assisted) and <span class="text-green-400 font-medium">Direct P2P Mode</span> (Hardware-to-hardware). In both modes, communication is anonymous and ephemeral.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION: The Zero-Persistence Clause -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-10">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-glow/20 to-spark/10 border border-glow/20 flex items-center justify-center font-mono font-700 text-sm text-glow">
+          03
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          The <span class="text-transparent bg-clip-text bg-gradient-to-r from-glow to-spark">Zero-Persistence</span> Clause
+        </h2>
+      </div>
+
+      <div class="space-y-6">
+        <!-- No Accounts -->
+        <div class="reveal alert shadow-lg bg-surface/80 border border-spark/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">👤</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">No Accounts</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              FlirtSpot does not utilize user accounts, email addresses, or phone numbers. Your identity is a <span class="text-white/90 font-medium">local, temporary ID</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Zero-Log Servers -->
+        <div class="reveal reveal-delay-1 alert shadow-lg bg-surface/80 border border-pulse/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">🛰️</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">Zero-Log Servers</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              You acknowledge that our relay servers operate on a <span class="text-white/90 font-medium">RAM-only basis</span>. Once you disconnect, we have no record of your interactions, and we cannot retrieve deleted content or logs for you.
+            </p>
+          </div>
+        </div>
+
+        <!-- Media Expiry -->
+        <div class="reveal reveal-delay-2 alert shadow-lg bg-surface/80 border border-glow/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">⏱️</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">Media Expiry</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              "Flirts" (media) are deleted <span class="text-glow font-medium">60 seconds</span> after being viewed. You understand that once a file is wiped by our Forensic Sanitization protocol, it is <span class="text-white/90 font-medium">unrecoverable</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION: Termination & Liability -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-10">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-mono font-700 text-sm text-spark">
+          04
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Termination & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Liability</span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Termination -->
+        <div class="reveal stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="text-3xl mb-4">🗑️</div>
+          <h3 class="font-display font-700 text-lg mb-3">Termination</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            You may terminate this agreement at any time by <span class="text-white/90 font-medium">uninstalling the application</span>. There are no accounts to close. Simply delete the app and you're done.
+          </p>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="text-3xl mb-4">🛡️</div>
+          <h3 class="font-display font-700 text-lg mb-3">Disclaimer</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            FlirtSpot is provided <span class="text-white/90 font-medium">"As-Is."</span> We are not responsible for real-world interactions or safety once you transition from the app to a face-to-face meeting. Always prioritize your personal safety in public spaces.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FOOTER: Legal & Contact -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="relative border-t border-white/5 bg-surface/50 py-16">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="reveal font-display font-800 text-3xl md:text-5xl mb-4">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Be real. Be respectful.</span>
+      </h2>
+      <p class="reveal reveal-delay-1 text-white/60 mb-10 text-lg">Keep it in the moment.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <!-- Reporting -->
+        <div class="reveal reveal-delay-1 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">🚨</div>
+          <h3 class="font-display font-700 mb-2">Reporting</h3>
+          <p class="text-white/50 text-sm leading-relaxed">For abuse reports or security concerns, contact our local-first support via the app interface.</p>
+        </div>
+
+        <!-- Modifications -->
+        <div class="reveal reveal-delay-2 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">📝</div>
+          <h3 class="font-display font-700 mb-2">Modifications</h3>
+          <p class="text-white/50 text-sm leading-relaxed">We reserve the right to modify these terms as the platform evolves. Your continued use constitutes acceptance.</p>
+        </div>
+
+        <!-- Final Note -->
+        <div class="reveal reveal-delay-3 gradient-border rounded-2xl p-6 bg-surface/50">
+          <div class="text-3xl mb-3">💜</div>
+          <h3 class="font-display font-700 mb-2">Final Note</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Be real. Be respectful. Keep it in the moment. That's all we ask.</p>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-4 text-white/20 text-xs space-y-2">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
+          <a href="index.html" class="text-spark/60 hover:text-spark transition-colors no-underline">← Back to Home</a>
+          <span class="text-white/10">|</span>
+          <a href="privacy.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Privacy Promise</a>
+          <span class="text-white/10">|</span>
+          <a href="whitepaper.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Technical Whitepaper</a>
+        </div>
+        <p class="pt-4 text-white/10">© 2024 FlirtSpot. Built for the moment.</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Scroll Reveal JS -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

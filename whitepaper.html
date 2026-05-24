@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlirtSpot — Technical Whitepaper v2.0</title>
+
+  <!-- Fonts: Syne (display) + DM Sans (body) + JetBrains Mono (code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/svg+xml" href="icon_flirtspot.svg" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            spark: '#c850c0',
+            pulse: '#8B5CF6',
+            neon: '#4158D0',
+            glow: '#ff6b9d',
+            midnight: '#07060b',
+            surface: '#0f0d17',
+            surfaceLight: '#1a1726',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #07060b;
+      --fg: #f0ece4;
+      --muted: #7a7590;
+      --accent: #c850c0;
+      --accent2: #8B5CF6;
+      --glow: #ff6b9d;
+      --surface: #0f0d17;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      font-size: 22px;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* Reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+
+    /* Hero gradient mesh */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200, 80, 192, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #07060b 0%, #0f0d17 100%);
+    }
+
+    /* Glow text */
+    .glow-text {
+      text-shadow: 0 0 40px rgba(200, 80, 192, 0.5), 0 0 80px rgba(200, 80, 192, 0.2);
+    }
+
+    /* Gradient border */
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), transparent, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    /* Code block styling */
+    .code-block {
+      background: linear-gradient(135deg, #0f0d17, #1a1726);
+      border: 1px solid rgba(200, 80, 192, 0.15);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .code-block .code-header {
+      background: rgba(200, 80, 192, 0.05);
+      border-bottom: 1px solid rgba(200, 80, 192, 0.1);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .code-block .code-header .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .code-block pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* Section divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), var(--accent2), transparent);
+      opacity: 0.2;
+    }
+
+    /* Architecture diagram node */
+    .arch-node {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .arch-node:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(200, 80, 192, 0.15);
+    }
+
+    /* Data flow animation */
+    @keyframes dataFlow {
+      0% { stroke-dashoffset: 20; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .data-flow-line {
+      stroke-dasharray: 8 4;
+      animation: dataFlow 1s linear infinite;
+    }
+
+    /* Pulse ring */
+    @keyframes radarPulse {
+      0% { transform: scale(0.5); opacity: 0.8; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+    .radar-ring {
+      animation: radarPulse 3s ease-out infinite;
+    }
+    .radar-ring:nth-child(2) { animation-delay: 1s; }
+    .radar-ring:nth-child(3) { animation-delay: 2s; }
+
+    /* Table styling */
+    .wp-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .wp-table thead th {
+      background: rgba(200, 80, 192, 0.08);
+      padding: 14px 20px;
+      text-align: left;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid rgba(200, 80, 192, 0.15);
+    }
+    .wp-table thead th:first-child { border-radius: 12px 0 0 0; }
+    .wp-table thead th:last-child { border-radius: 0 12px 0 0; }
+    .wp-table tbody td {
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 15px;
+      color: rgba(255,255,255,0.7);
+    }
+    .wp-table tbody tr:nth-child(even) td {
+      background: rgba(200, 80, 192, 0.02);
+    }
+    .wp-table tbody tr:hover td {
+      background: rgba(200, 80, 192, 0.06);
+    }
+    .wp-table tbody tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+    .wp-table tbody tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+
+    /* Timeline connector */
+    .timeline-line {
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+    }
+
+    /* Badge glow */
+    .badge-glow {
+      box-shadow: 0 0 12px rgba(200, 80, 192, 0.3);
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+    }
+
+    /* TOC sidebar */
+    .toc-link {
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+    .toc-link:hover {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      padding-left: 12px;
+    }
+    .toc-link.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      padding-left: 12px;
+    }
+
+    /* Stat card */
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(200, 80, 192, 0.15);
+    }
+
+    /* Version badge */
+    .version-badge {
+      background: linear-gradient(135deg, rgba(200,80,192,0.15), rgba(139,92,246,0.15));
+      border: 1px solid rgba(200,80,192,0.2);
+    }
+
+    /* Slack link */
+    .slack-link {
+      background: linear-gradient(135deg, rgba(200,80,192,0.1), rgba(139,92,246,0.1));
+      border: 1px solid rgba(200,80,192,0.2);
+      transition: all 0.3s ease;
+    }
+    .slack-link:hover {
+      background: linear-gradient(135deg, rgba(200,80,192,0.2), rgba(139,92,246,0.2));
+      border-color: rgba(200,80,192,0.4);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="bg-midnight font-body">
+
+  <!-- Fixed top-left icon (link back to home) -->
+  <a href="index.html" class="fixed top-4 left-4 z-50 hover:opacity-80 transition-opacity">
+    <img src="icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
+  </a>
+
+  <!-- Back to home -->
+  <a href="index.html" class="fixed top-4 right-4 z-50 text-white/50 hover:text-white/80 text-sm font-display tracking-wider transition-colors no-underline flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Home
+  </a>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- HERO -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+    <div class="hero-bg"></div>
+
+    <!-- Floating orbs -->
+    <div class="orb" style="width:350px;height:350px;background:rgba(200,80,192,0.06);top:5%;left:-5%;animation-delay:-2s;"></div>
+    <div class="orb" style="width:250px;height:250px;background:rgba(139,92,246,0.06);bottom:10%;right:-3%;animation-delay:-5s;"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto py-24">
+      <!-- Version badge -->
+      <div class="reveal inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full version-badge text-sm text-spark font-display tracking-wider">
+        🛠️ Technical Whitepaper
+      </div>
+
+      <!-- Title -->
+      <h1 class="reveal reveal-delay-1 font-display font-800 text-4xl sm:text-5xl md:text-7xl leading-[0.95] tracking-tight mb-6">
+        FlirtSpot <span class="glow-text text-transparent bg-clip-text bg-gradient-to-r from-spark via-pulse to-neon">v2.0</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="reveal reveal-delay-2 text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-light leading-relaxed mb-8">
+        The complete technical specification of the <span class="text-white font-medium">Zero-Persistence</span> architecture — identity standards, dual-mode networking, and forensic data sanitization.
+      </p>
+
+      <!-- Meta row -->
+      <div class="reveal reveal-delay-3 flex flex-wrap items-center justify-center gap-4 text-sm text-white/40">
+        <span class="version-badge px-3 py-1 rounded-full text-pulse font-mono">v2.0.4</span>
+        <span>Target: API 36 (Android 15)</span>
+        <span class="w-1 h-1 rounded-full bg-white/20"></span>
+        <span>Min: API 26 (Android 8.0)</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TABLE OF CONTENTS -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-12">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm">
+        <h3 class="font-display font-700 text-lg mb-6 text-white/80">Contents</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <a href="#identity" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">01</span> Identity & Addressing Standard
+          </a>
+          <a href="#communication" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">02</span> Dual-Mode Communication
+          </a>
+          <a href="#sanitization" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">03</span> Media Lifecycle & Forensic Wipe
+          </a>
+          <a href="#local-data" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">04</span> Local Data Persistence
+          </a>
+          <a href="#server" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">05</span> Server-Side Forgetfulness
+          </a>
+          <a href="#compliance" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
+            <span class="text-spark font-mono mr-2">06</span> Versioning & Compliance
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 1: Identity & Addressing -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="identity" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <!-- Section number + title -->
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-mono font-700 text-sm text-spark">
+          01
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Identity & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Addressing</span> Standard
+        </h2>
+      </div>
+
+      <div class="reveal reveal-delay-1 text-white/70 leading-relaxed space-y-5 mb-10">
+        <p>
+          FlirtSpot utilizes <span class="text-white font-medium">UUID version 7</span> for peer identification. Unlike standard random UUIDs, version 7 is time-ordered, providing two primary benefits:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="stat-card gradient-border rounded-xl p-6 bg-surface/50">
+            <div class="text-spark font-display font-700 mb-2">Anonymous Indexing</div>
+            <p class="text-white/60 text-sm leading-relaxed">Efficient local database (Room) indexing without requiring a central registry or user metadata.</p>
+          </div>
+          <div class="stat-card gradient-border rounded-xl p-6 bg-surface/50">
+            <div class="text-pulse font-display font-700 mb-2">Chronological Integrity</div>
+            <p class="text-white/60 text-sm leading-relaxed">Peer IDs naturally sort by creation time, aiding in session management without storing timestamps.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code block -->
+      <div class="reveal reveal-delay-2 code-block">
+        <div class="code-header">
+          <div class="dot" style="background:#ff5f57"></div>
+          <div class="dot" style="background:#febc2e"></div>
+          <div class="dot" style="background:#28c840"></div>
+          <span class="ml-3 text-white/30 text-xs font-mono">peer_identity.json</span>
+        </div>
+        <pre class="text-white/80 font-mono"><code>{
+  <span class="text-spark">"peerId"</span>: <span class="text-green-400">"018f3a2b-1234-7abc-8def-0123456789ab"</span>,
+  <span class="text-spark">"structure"</span>: <span class="text-green-400">"[48-bit Timestamp] + [12-bit Ver/Var] + [62-bit Random]"</span>
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 2: Dual-Mode Communication -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="communication" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-pulse/20 to-neon/10 border border-pulse/20 flex items-center justify-center font-mono font-700 text-sm text-pulse">
+          02
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Dual-Mode <span class="text-transparent bg-clip-text bg-gradient-to-r from-pulse to-spark">Communication</span>
+        </h2>
+      </div>
+
+      <!-- Architecture diagram -->
+      <div class="reveal reveal-delay-1 mb-12">
+        <div class="gradient-border rounded-2xl p-6 bg-surface/50 overflow-hidden">
+          <svg viewBox="0 0 700 220" class="w-full" xmlns="http://www.w3.org/2000/svg">
+            <!-- Device A -->
+            <g transform="translate(80, 110)">
+              <rect x="-35" y="-55" width="70" height="110" rx="10" fill="#1a1726" stroke="#c850c0" stroke-width="1.5" opacity="0.8"/>
+              <rect x="-28" y="-45" width="56" height="80" rx="4" fill="#0f0d17"/>
+              <circle cx="0" cy="46" r="4" fill="none" stroke="#c850c0" stroke-width="1" opacity="0.5"/>
+              <text x="0" y="-65" text-anchor="middle" fill="white" font-family="Syne" font-size="12" font-weight="700">Device A</text>
+            </g>
+
+            <!-- Device B -->
+            <g transform="translate(620, 110)">
+              <rect x="-35" y="-55" width="70" height="110" rx="10" fill="#1a1726" stroke="#8B5CF6" stroke-width="1.5" opacity="0.8"/>
+              <rect x="-28" y="-45" width="56" height="80" rx="4" fill="#0f0d17"/>
+              <circle cx="0" cy="46" r="4" fill="none" stroke="#8B5CF6" stroke-width="1" opacity="0.5"/>
+              <text x="0" y="-65" text-anchor="middle" fill="white" font-family="Syne" font-size="12" font-weight="700">Device B</text>
+            </g>
+
+            <!-- Mode A: WSS Relay (top path) -->
+            <path d="M 130 85 Q 350 20 570 85" fill="none" stroke="#8B5CF6" stroke-width="2" class="data-flow-line" opacity="0.7"/>
+            <!-- Relay server -->
+            <g transform="translate(350, 42)">
+              <rect x="-45" y="-18" width="90" height="36" rx="8" fill="#8B5CF6" opacity="0.12" stroke="#8B5CF6" stroke-width="1" opacity="0.3"/>
+              <text x="0" y="5" text-anchor="middle" fill="#8B5CF6" font-family="JetBrains Mono" font-size="10" font-weight="500">☁️ WSS Relay</text>
+            </g>
+            <text x="350" y="15" text-anchor="middle" fill="#8B5CF6" font-family="Syne" font-size="11" font-weight="600" letter-spacing="1" opacity="0.8">MODE A: ENCRYPTED RELAY</text>
+
+            <!-- Mode B: P2P (bottom path) -->
+            <path d="M 130 135 Q 350 200 570 135" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6 3" opacity="0.5"/>
+            <text x="350" y="195" text-anchor="middle" fill="#22c55e" font-family="Syne" font-size="11" font-weight="600" letter-spacing="1" opacity="0.8">MODE B: DIRECT P2P</text>
+            <text x="350" y="210" text-anchor="middle" fill="white" font-family="DM Sans" font-size="9" opacity="0.5">⚡ Bluetooth / Local Link</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mode details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Mode A -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">☁️</span>
+            <h3 class="font-display font-700 text-lg text-pulse">Mode A: WebSocket Relay</h3>
+          </div>
+          <ul class="space-y-3 text-white/65 text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-pulse mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Transport:</span> Encrypted WebSocket (WSS) via OkHttp</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-pulse mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Payload:</span> Binary serialization using Protocol Buffers (Protobuf) to minimize latency and metadata leakage</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-pulse mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Infrastructure:</span> Proprietary relay servers operating on a Zero-Disk Policy. All traffic handled in volatile RAM; no logs or databases</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Mode B -->
+        <div class="reveal reveal-delay-2 stat-card gradient-border rounded-2xl p-8 bg-surface/50">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">⚡</span>
+            <h3 class="font-display font-700 text-lg text-green-400">Mode B: Direct P2P</h3>
+          </div>
+          <ul class="space-y-3 text-white/65 text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-green-400 mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Protocol:</span> Hardware-to-hardware proximity links</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-400 mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Discovery:</span> Low-energy beaconing for peer detection</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-400 mt-1">▸</span>
+              <span><span class="text-white/90 font-medium">Privacy:</span> No server, no middleman, zero possibility of remote logging</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 3: Media Lifecycle & Forensic Sanitization -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="sanitization" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-spark/20 to-glow/10 border border-spark/20 flex items-center justify-center font-mono font-700 text-sm text-spark">
+          03
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Media Lifecycle & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-glow">Forensic Wipe</span>
+        </h2>
+      </div>
+
+      <div class="reveal reveal-delay-1 text-white/70 leading-relaxed mb-10">
+        <p>
+          FlirtSpot does not rely on simple file deletion. We implement a <span class="text-white font-medium">Forensic Wipe Protocol</span> to prevent data recovery from physical storage.
+        </p>
+      </div>
+
+      <!-- Lifecycle table -->
+      <div class="reveal reveal-delay-2 gradient-border rounded-2xl overflow-hidden bg-surface/50 mb-10">
+        <table class="wp-table">
+          <thead>
+            <tr>
+              <th>Lifecycle Stage</th>
+              <th>Action</th>
+              <th>Security Layer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="inline-flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                  <span class="text-white/90 font-medium">Ingress</span>
+                </span>
+              </td>
+              <td>Encrypted write to <code class="text-spark/80 bg-spark/5 px-2 py-0.5 rounded text-xs font-mono">Context.cacheDir</code></td>
+              <td><span class="badge badge-ghost badge-sm">App-Private Sandboxing</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="inline-flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                  <span class="text-white/90 font-medium">Display</span>
+                </span>
+              </td>
+              <td>60-Second Countdown</td>
+              <td><span class="badge badge-ghost badge-sm text-pulse">FLAG_SECURE</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="inline-flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-spark"></span>
+                  <span class="text-white/90 font-medium">Expiry</span>
+                </span>
+              </td>
+              <td><span class="text-spark font-medium">Secure Overwrite</span></td>
+              <td><span class="badge badge-ghost badge-sm text-glow">3-Pass Random Bit Injection</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="inline-flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                  <span class="text-white/90 font-medium">Finalization</span>
+                </span>
+              </td>
+              <td>File Descriptor Removal</td>
+              <td><span class="badge badge-ghost badge-sm">System-Level Deletion</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Visual lifecycle flow -->
+      <div class="reveal reveal-delay-3">
+        <div class="flex flex-col md:flex-row items-stretch gap-4">
+          <!-- Ingress -->
+          <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
+            <div class="text-2xl mb-2">📥</div>
+            <div class="font-display font-700 text-sm text-green-400 mb-1">Ingress</div>
+            <div class="text-xs text-white/50">Encrypted cache write</div>
+          </div>
+          <!-- Arrow -->
+          <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
+          <!-- Display -->
+          <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
+            <div class="text-2xl mb-2">👁️</div>
+            <div class="font-display font-700 text-sm text-yellow-400 mb-1">Display</div>
+            <div class="text-xs text-white/50">60s countdown + FLAG_SECURE</div>
+          </div>
+          <!-- Arrow -->
+          <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
+          <!-- Overwrite -->
+          <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
+            <div class="text-2xl mb-2">🔄</div>
+            <div class="font-display font-700 text-sm text-spark mb-1">Overwrite</div>
+            <div class="text-xs text-white/50">3-pass random bit injection</div>
+          </div>
+          <!-- Arrow -->
+          <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
+          <!-- Delete -->
+          <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
+            <div class="text-2xl mb-2">💨</div>
+            <div class="font-display font-700 text-sm text-red-400 mb-1">Gone</div>
+            <div class="text-xs text-white/50">File descriptor destroyed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 5: Local Data Persistence -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="local-data" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-neon/20 to-pulse/10 border border-neon/20 flex items-center justify-center font-mono font-700 text-sm text-neon">
+          04
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Local Data <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon to-pulse">Persistence</span> (Room)
+        </h2>
+      </div>
+
+      <div class="reveal reveal-delay-1 text-white/70 leading-relaxed mb-10">
+        <p>
+          The local SQLite database is the <span class="text-white font-medium">only</span> place where interaction history resides. Users have total control over their local history, which is never synced to any cloud service.
+        </p>
+      </div>
+
+      <!-- Room entities -->
+      <div class="space-y-4">
+        <!-- MyProfile -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-xl p-6 bg-surface/50">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-spark/10 border border-spark/20 flex items-center justify-center text-lg">👤</div>
+            <div>
+              <h4 class="font-display font-700 text-base text-white/90 mb-1">MyProfile</h4>
+              <p class="text-white/60 text-sm leading-relaxed">Encrypted local settings and <span class="text-white/80 font-medium">immutable gender ID</span>. Stored exclusively in the app's private sandbox.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DiscoveredPeers -->
+        <div class="reveal reveal-delay-2 stat-card gradient-border rounded-xl p-6 bg-surface/50">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-pulse/10 border border-pulse/20 flex items-center justify-center text-lg">📡</div>
+            <div>
+              <h4 class="font-display font-700 text-base text-white/90 mb-1">DiscoveredPeers</h4>
+              <p class="text-white/60 text-sm leading-relaxed">Temporary cache of nearby signals. <span class="text-pulse font-medium">Purged on app close</span>. No persistent record of who you've encountered.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MessageLog -->
+        <div class="reveal reveal-delay-3 stat-card gradient-border rounded-xl p-6 bg-surface/50">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-glow/10 border border-glow/20 flex items-center justify-center text-lg">💬</div>
+            <div>
+              <h4 class="font-display font-700 text-base text-white/90 mb-1">MessageLog</h4>
+              <p class="text-white/60 text-sm leading-relaxed">Interaction history with <span class="text-white/80 font-medium">user-configurable retention</span>. You decide how long messages survive. Auto-wipe by default.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code block -->
+      <div class="reveal reveal-delay-4 code-block mt-8">
+        <div class="code-header">
+          <div class="dot" style="background:#ff5f57"></div>
+          <div class="dot" style="background:#febc2e"></div>
+          <div class="dot" style="background:#28c840"></div>
+          <span class="ml-3 text-white/30 text-xs font-mono">room_entities.kt</span>
+        </div>
+        <pre class="text-white/80 font-mono"><code><span class="text-pulse">@Entity</span>
+<span class="text-pulse">data class</span> <span class="text-spark">DiscoveredPeer</span>(
+    <span class="text-green-400">@PrimaryKey</span> <span class="text-pulse">val</span> peerId: String,
+    <span class="text-pulse">val</span> connectionTag: String,
+    <span class="text-pulse">val</span> discoveredAt: Long,
+    <span class="text-pulse">val</span> mode: ConnectionMode  <span class="text-white/40">// RELAY | P2P</span>
+)
+
+<span class="text-white/40">// Auto-purged on onDestroy()</span>
+<span class="text-pulse">fun</span> <span class="text-spark">clearDiscoveryCache</span>() = dao.deleteAll()</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 6: Server-Side Forgetfulness -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="server" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-mono font-700 text-sm text-spark">
+          05
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Server-Side <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Forgetfulness</span>
+        </h2>
+      </div>
+
+      <div class="reveal reveal-delay-1 text-white/70 leading-relaxed mb-10">
+        <p>
+          Our relay servers are engineered to be <span class="text-white font-medium">stateless</span>. When a user disconnects:
+        </p>
+      </div>
+
+      <!-- Server wipe timeline -->
+      <div class="relative space-y-0 mb-10">
+        <div class="hidden md:block absolute left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-spark via-pulse to-transparent"></div>
+
+        <!-- Step 1 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-6">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-display font-800 text-xl text-spark relative z-10">
+            1
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Connection Close Event</h3>
+            <p class="text-white/65 leading-relaxed">
+              The WebSocket <code class="text-spark/80 bg-spark/5 px-2 py-0.5 rounded text-sm font-mono">onClose</code> event triggers an <span class="text-white/90 font-medium">immediate memory purge</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="reveal reveal-delay-1 flex gap-6 md:gap-10 items-start py-6">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-pulse/20 to-neon/10 border border-pulse/20 flex items-center justify-center font-display font-800 text-xl text-pulse relative z-10">
+            2
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Key & Token Erasure</h3>
+            <p class="text-white/65 leading-relaxed">
+              Associated <span class="text-white/90 font-medium">Public Keys</span> and session tokens are erased from RAM. No traces remain in memory.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="reveal reveal-delay-2 flex gap-6 md:gap-10 items-start py-6">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-glow/20 to-spark/10 border border-glow/20 flex items-center justify-center font-display font-800 text-xl text-glow relative z-10">
+            3
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Total Amnesia</h3>
+            <p class="text-white/65 leading-relaxed">
+              The server retains <span class="text-white/90 font-medium">no record</span> of the Peer ID or the duration of the connection. As if you were never there.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-6"><div class="section-divider"></div></div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 7: Versioning & Compliance -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="compliance" class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal flex items-center gap-4 mb-8">
+        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-pulse/20 to-spark/10 border border-pulse/20 flex items-center justify-center font-mono font-700 text-sm text-pulse">
+          06
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl">
+          Versioning & <span class="text-transparent bg-clip-text bg-gradient-to-r from-pulse to-spark">Compliance</span>
+        </h2>
+      </div>
+
+      <!-- Version grid -->
+      <div class="reveal reveal-delay-1 grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+        <div class="gradient-border rounded-xl p-5 bg-surface/50">
+          <div class="text-white/40 text-xs font-display tracking-wider uppercase mb-2">Whitepaper Version</div>
+          <div class="font-mono font-700 text-lg text-spark">2.0.4</div>
+        </div>
+        <div class="gradient-border rounded-xl p-5 bg-surface/50">
+          <div class="text-white/40 text-xs font-display tracking-wider uppercase mb-2">Target Android SDK</div>
+          <div class="font-mono font-700 text-lg text-pulse">API 36 <span class="text-white/40 text-sm font-body">(Android 15)</span></div>
+        </div>
+        <div class="gradient-border rounded-xl p-5 bg-surface/50">
+          <div class="text-white/40 text-xs font-display tracking-wider uppercase mb-2">Minimum Android SDK</div>
+          <div class="font-mono font-700 text-lg text-glow">API 26 <span class="text-white/40 text-sm font-body">(Android 8.0)</span></div>
+        </div>
+        <div class="gradient-border rounded-xl p-5 bg-surface/50">
+          <div class="text-white/40 text-xs font-display tracking-wider uppercase mb-2">Privacy Standards</div>
+          <div class="font-display font-700 text-lg text-green-400">GDPR & CCPA</div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2 text-white/60 text-center text-sm mb-10">
+        Engineered for GDPR and CCPA compliance through <span class="text-white/80 font-medium">total data avoidance</span>.
+      </div>
+
+      <!-- Slack invite -->
+      <div class="reveal reveal-delay-3">
+        <a href="https://join.slack.com/t/flirtspot/shared_invite/zt-3z9iuw63k-ET2dk~nlLFiVwxodk33q4A" target="_blank" rel="noopener noreferrer" class="slack-link block rounded-2xl p-8 text-center no-underline">
+          <div class="text-3xl mb-3">💬</div>
+          <h3 class="font-display font-700 text-lg text-white/90 mb-2">Join the FlirtSpot Slack</h3>
+          <p class="text-white/50 text-sm mb-4">Connect with the team, ask questions, and contribute to the project.</p>
+          <span class="inline-flex items-center gap-2 text-spark font-display font-600 text-sm">
+            Join Slack
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="relative border-t border-white/5 bg-surface/50 py-12">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <div class="flex items-center justify-center gap-4 flex-wrap text-sm mb-4">
+        <a href="index.html" class="text-spark/60 hover:text-spark transition-colors no-underline">← Home</a>
+        <span class="text-white/10">|</span>
+        <a href="privacy.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Privacy Promise</a>
+        <span class="text-white/10">|</span>
+        <a href="terms.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Terms of Service</a>
+      </div>
+      <p class="text-white/10 text-xs">© 2024 FlirtSpot. Built for the moment.</p>
+    </div>
+  </footer>
+
+
+  <!-- Scroll Reveal + Active TOC -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Active TOC highlighting
+    const sections = document.querySelectorAll('section[id]');
+    const tocLinks = document.querySelectorAll('.toc-link');
+
+    const tocObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`.toc-link[href="#${entry.target.id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '-100px 0px -60% 0px'
+    });
+
+    sections.forEach(section => tocObserver.observe(section));
+  </script>
+
+</body>
+</html>
