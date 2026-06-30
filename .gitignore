@@ -1,0 +1,5 @@
+# Build output (deployed to Cloudflare Pages directly)
+dist/
+
+# Windows downloaded-file metadata (junk)
+*Zone.Identifier

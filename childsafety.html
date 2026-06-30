@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlirtSpot — Child Safety</title>
+  <meta name="description" content="FlirtSpot is strictly 18+. Our child safety policy: zero tolerance for minors and child sexual abuse material (CSAM), in-app reporting, NCMEC CyberTipline escalation, and law-enforcement cooperation.">
+
+  <!-- Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/svg+xml" href="images/icon_flirtspot.svg" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            spark: '#c850c0',
+            pulse: '#8B5CF6',
+            neon: '#4158D0',
+            glow: '#ff6b9d',
+            midnight: '#07060b',
+            surface: '#0f0d17',
+            surfaceLight: '#1a1726',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #07060b;
+      --fg: #f0ece4;
+      --muted: #7a7590;
+      --accent: #c850c0;
+      --accent2: #8B5CF6;
+      --glow: #ff6b9d;
+      --surface: #0f0d17;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+      font-size: 22px;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* Reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+    .reveal-delay-4 { transition-delay: 0.6s; }
+
+    /* Hero gradient mesh */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200, 80, 192, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(75, 0, 130, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #07060b 0%, #0f0d17 100%);
+    }
+
+    /* Glow text */
+    .glow-text {
+      text-shadow: 0 0 40px rgba(200, 80, 192, 0.5), 0 0 80px rgba(200, 80, 192, 0.2);
+    }
+
+    /* Gradient border */
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), transparent, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    /* Accordion styling */
+    .privacy-accordion .collapse-content {
+      padding: 1rem 1.5rem 1.5rem;
+    }
+
+    /* Badge glow */
+    .badge-glow {
+      box-shadow: 0 0 12px rgba(200, 80, 192, 0.3);
+    }
+
+    /* Stat card hover */
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(200, 80, 192, 0.15);
+    }
+
+    /* Shield pulse */
+    @keyframes shieldPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.05); }
+    }
+    .shield-pulse {
+      animation: shieldPulse 3s ease-in-out infinite;
+    }
+
+    /* No-entry slash rotate */
+    @keyframes slashPulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    .slash-pulse {
+      animation: slashPulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-midnight font-body">
+
+  <!-- Fixed top-left icon (link back to home) -->
+  <a href="index.html" class="fixed top-4 left-4 z-50 hover:opacity-80 transition-opacity">
+    <img src="images/icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
+  </a>
+
+  <!-- Back to home -->
+  <a href="index.html" class="fixed top-4 right-4 z-50 text-white/50 hover:text-white/80 text-sm font-display tracking-wider transition-colors no-underline flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Home
+  </a>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 1: HERO — Child Safety -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <div class="hero-bg"></div>
+
+    <!-- Floating orbs -->
+    <div class="absolute w-[300px] h-[300px] rounded-full bg-spark/5 blur-[80px] top-[10%] left-[-5%] pointer-events-none"></div>
+    <div class="absolute w-[200px] h-[200px] rounded-full bg-pulse/5 blur-[80px] bottom-[10%] right-[-5%] pointer-events-none"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto py-24">
+      <!-- Shield animation -->
+      <div class="reveal mb-8 relative inline-block">
+        <svg width="120" height="120" viewBox="0 0 120 120" class="mx-auto">
+          <!-- Shield -->
+          <path d="M60 10 L100 30 L100 60 C100 85 80 105 60 115 C40 105 20 85 20 60 L20 30 Z" fill="none" stroke="#c850c0" stroke-width="2" class="shield-pulse"/>
+          <path d="M60 20 L90 35 L90 58 C90 78 75 95 60 103 C45 95 30 78 30 58 L30 35 Z" fill="rgba(200,80,192,0.08)" stroke="#c850c0" stroke-width="1" opacity="0.3"/>
+          <!-- Child figure -->
+          <g transform="translate(60, 58)" fill="#8B5CF6" opacity="0.7">
+            <circle cx="0" cy="-12" r="7"/>
+            <path d="M-9 4 Q0 -4 9 4 L7 16 L4 16 L4 6 L-4 6 L-4 16 L-7 16 Z"/>
+          </g>
+          <!-- Protective ring -->
+          <circle cx="60" cy="58" r="32" fill="none" stroke="#ff6b9d" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <!-- Badge -->
+      <div class="reveal inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-spark/20 bg-spark/5 text-sm text-spark font-display tracking-wider">
+        🛡️ Child Safety Policy
+      </div>
+
+      <!-- Headline -->
+      <h1 class="reveal reveal-delay-1 font-display font-800 text-4xl sm:text-5xl md:text-7xl leading-[0.95] tracking-tight mb-6">
+        A Line<br>
+        <span class="glow-text text-transparent bg-clip-text bg-gradient-to-r from-spark via-pulse to-neon">We Never Cross.</span>
+      </h1>
+
+      <!-- Sub-headline -->
+      <p class="reveal reveal-delay-2 text-lg md:text-xl text-white/75 max-w-3xl mx-auto font-light leading-relaxed">
+        FlirtSpot is built exclusively for <span class="text-white font-medium">adults aged 18 and over</span>. There is no place for minors on this platform — and <span class="text-white font-medium">zero tolerance</span> for anyone who would harm them. This page explains exactly how we protect children and how you can help.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 2: Zero-Tolerance Statement -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-16 md:py-20">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="reveal gradient-border rounded-2xl p-8 md:p-12 bg-surface/70 backdrop-blur-sm text-center">
+        <div class="text-5xl mb-6 inline-block text-glow">
+          <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+        </div>
+        <h2 class="font-display font-800 text-2xl md:text-4xl mb-4">
+          Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-glow to-spark">Zero-Tolerance</span> Stance
+        </h2>
+        <p class="text-white/70 leading-relaxed text-lg">
+          flirt.spot has a <span class="text-white font-medium">zero-tolerance policy</span> towards Child Sexual Abuse Material (CSAM) and any form of child exploitation. Any such content or behavior is <span class="text-white font-medium">strictly prohibited</span> and will result in <span class="text-spark font-medium">immediate and permanent removal</span> from the platform. This applies to every message, image, and piece of content on our service — including our ephemeral, anonymous features, and anonymity is never a shield from this rule.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 3: Four Pillars -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Four Layers of <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Protection</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg max-w-xl mx-auto">How we keep minors off the app and abuse off the network.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Pillar 1: 18+ Only -->
+        <div class="reveal stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm">
+          <div class="text-5xl mb-5 text-spark">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-display font-700 text-xl mb-3">Strictly 18+ Gate</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            Every account must certify it is operated by an adult by providing a <span class="text-white/90 font-medium">year of birth</span> that qualifies as 18 or older before the app can be used. FlirtSpot is not directed to, and may not be used by, anyone under 18.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-ghost badge-sm text-white/40 font-mono">age-gate · 18+ · on-device</span>
+          </div>
+        </div>
+
+        <!-- Pillar 2: Zero tolerance CSAM -->
+        <div class="reveal reveal-delay-1 stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm">
+          <div class="text-5xl mb-5 text-glow">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+          </div>
+          <h3 class="font-display font-700 text-xl mb-3">Zero Tolerance for CSAM</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            Any content that sexualizes or exploits a minor results in <span class="text-white/90 font-medium">immediate removal, permanent ban</span>, and a report to the <span class="text-white/90 font-medium">NCMEC CyberTipline</span> and relevant law-enforcement authorities.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-accent badge-sm badge-glow">Reported to NCMEC</span>
+          </div>
+        </div>
+
+        <!-- Pillar 3: Report & Block -->
+        <div class="reveal reveal-delay-2 stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm">
+          <div class="text-5xl mb-5 text-pulse">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+          </div>
+          <h3 class="font-display font-700 text-xl mb-3">In-App Reporting</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            You can <span class="text-white/90 font-medium">report any user directly from their profile</span>. Our system monitors reports to identify and remove malicious actors — while <span class="text-white/90 font-medium">maintaining your anonymity</span>. Reports flagging minors or child exploitation are escalated to our highest priority queue and triaged immediately.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-secondary badge-sm badge-glow">Anonymous · From Profile</span>
+          </div>
+        </div>
+
+        <!-- Pillar 4: Swift Action -->
+        <div class="reveal reveal-delay-3 stat-card gradient-border rounded-2xl p-8 bg-surface/50 backdrop-blur-sm">
+          <div class="text-5xl mb-5 text-neon">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-display font-700 text-xl mb-3">Decisive, Documented Action</h3>
+          <p class="text-white/65 text-sm leading-relaxed">
+            When we confirm a violation, we <span class="text-white/90 font-medium">remove the content, terminate the account, and preserve evidence</span> for authorities. We do not warn repeat offenders — they are gone.
+          </p>
+          <div class="mt-4">
+            <span class="badge badge-ghost badge-sm text-white/40 font-mono">remove · ban · preserve</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 4: Keeping Minors Out -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Keeping <span class="text-transparent bg-clip-text bg-gradient-to-r from-pulse to-spark">Minors Out</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg">Prevention is the first line of defense.</p>
+      </div>
+
+      <div class="space-y-4 privacy-accordion">
+        <!-- Accordion 1: Age Gate -->
+        <div class="reveal collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="safety-accordion" checked="checked" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🔞</span>
+            Age Gate at the Door
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              Onboarding requires the user to enter a <span class="text-white/90 font-medium">year of birth</span> that establishes they are 18 or older. This certification is a binding part of our <a href="terms.html" class="text-spark hover:text-spark/80 underline">Terms of Service</a>, and misrepresenting one's age is a material breach that justifies immediate termination.
+            </p>
+          </div>
+        </div>
+
+        <!-- Accordion 2: No appeal to children -->
+        <div class="reveal reveal-delay-1 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="safety-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            Never Marketed to Children
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              FlirtSpot is designed and marketed <span class="text-white/90 font-medium">exclusively for adults</span>. Our store listing, content, and targeting are not directed at, or appealing to, children, and we do not knowingly collect any data from anyone under 18.
+            </p>
+          </div>
+        </div>
+
+        <!-- Accordion 3: Removing detected minors -->
+        <div class="reveal reveal-delay-2 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="safety-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🧹</span>
+            If We Detect a Minor
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              If we learn that a user is under 18, we <span class="text-white/90 font-medium">terminate their access immediately</span> and purge their anonymous profile data in line with our <a href="deleteaccount.html" class="text-spark hover:text-spark/80 underline">data-retention and deletion</a> practices. We rely on reports, behavioral signals, and platform tooling to surface these cases.
+            </p>
+          </div>
+        </div>
+
+        <!-- Accordion 4: FLAG_SECURE -->
+        <div class="reveal reveal-delay-3 collapse collapse-arrow bg-surface/80 border border-white/10 rounded-2xl">
+          <input type="radio" name="safety-accordion" />
+          <div class="collapse-title text-lg font-display font-700 flex items-center gap-3">
+            <span class="text-2xl">🔒</span>
+            Anti-Capture Safeguards
+          </div>
+          <div class="collapse-content">
+            <p class="text-white/65 leading-relaxed">
+              We enforce Android's <span class="text-white/90 font-medium">FLAG_SECURE</span> on ephemeral views to disable screenshots and screen recording. This limits the spread of any captured media and helps protect everyone — most of all vulnerable users — from non-consensual redistribution. See our <a href="privacy.html" class="text-spark hover:text-spark/80 underline">Privacy Promise</a> for the full technical detail.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 5: Report & Response Timeline -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Report It. We <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-glow">Act Fast.</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg max-w-2xl mx-auto">If you see a minor on the app, or any content exploiting a child, report it immediately. Here's what happens.</p>
+      </div>
+
+      <div class="relative space-y-0">
+        <!-- Vertical line -->
+        <div class="hidden md:block absolute left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-spark via-pulse to-transparent"></div>
+
+        <!-- Step 1 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-spark/20 to-pulse/10 border border-spark/20 flex items-center justify-center font-display font-800 text-xl text-spark relative z-10">
+            1
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">You Report It</h3>
+            <p class="text-white/65 leading-relaxed mb-4">
+              Open the user's profile, tap <span class="text-white/90 font-medium">Report User</span>, and choose a reason — adding <span class="text-white/90 font-medium">optional details</span> if you like. Your report stays anonymous. You can also email our dedicated safety channel at <a href="mailto:safety@flirt.spot" class="text-spark hover:text-spark/80 underline">safety@flirt.spot</a>.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="badge badge-outline badge-sm border-spark/30 text-spark/90">Underage User</span>
+              <span class="badge badge-outline badge-sm border-glow/30 text-glow/90">Child Safety Concern (CSAM)</span>
+              <span class="badge badge-outline badge-sm border-white/20 text-white/70">Harassment or Abuse</span>
+              <span class="badge badge-outline badge-sm border-white/20 text-white/70">Inappropriate Content</span>
+              <span class="badge badge-outline badge-sm border-white/20 text-white/70">Spam or Scams</span>
+            </div>
+            <div class="mt-4 text-sm text-white/40 italic">“Report submitted. Thank you for keeping flirt.spot safe.”</div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-pulse/20 to-neon/10 border border-pulse/20 flex items-center justify-center font-display font-800 text-xl text-pulse relative z-10">
+            2
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">We Triage &amp; Remove</h3>
+            <p class="text-white/65 leading-relaxed">
+              Child-safety reports are <span class="text-white/90 font-medium">prioritized above all else</span>. Confirmed violations lead to <span class="text-white/90 font-medium">immediate content removal and account termination</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-glow/20 to-spark/10 border border-glow/20 flex items-center justify-center font-display font-800 text-xl text-glow relative z-10">
+            3
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">We Escalate to Authorities</h3>
+            <p class="text-white/65 leading-relaxed">
+              Reports involving the sexual exploitation of a minor are escalated to the <span class="text-glow font-medium">NCMEC CyberTipline</span> and to the appropriate law-enforcement agencies, and evidence is preserved for their investigation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="reveal flex gap-6 md:gap-10 items-start py-8">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-spark/5 border border-white/10 flex items-center justify-center font-display font-800 text-xl text-white/60 relative z-10">
+            4
+          </div>
+          <div class="flex-1">
+            <h3 class="font-display font-700 text-xl md:text-2xl mb-2">We Block Re-entry</h3>
+            <p class="text-white/65 leading-relaxed">
+              Banned users are blocked from creating new accounts. We continuously improve our detection so offenders cannot simply return under a new anonymous identity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SECTION 6: Authorities & Resources -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="reveal font-display font-800 text-3xl md:text-5xl lg:text-6xl mb-4">
+          Authorities &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Resources</span>
+        </h2>
+        <p class="reveal reveal-delay-1 text-white/65 text-lg">If a child is in immediate danger, contact local emergency services right away.</p>
+      </div>
+
+      <div class="space-y-6">
+        <!-- NCMEC -->
+        <div class="reveal alert shadow-lg bg-surface/80 border border-spark/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">🇺🇸</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">NCMEC CyberTipline</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              Report suspected child sexual exploitation to the U.S. National Center for Missing &amp; Exploited Children. <a href="https://report.cybertip.org" target="_blank" rel="noopener noreferrer" class="text-spark hover:text-spark/80 underline">report.cybertip.org</a> · 1-800-843-5678.
+            </p>
+            <p class="text-white/50 text-sm leading-relaxed mt-2">
+              We comply with all applicable child safety laws and cooperate with NCMEC to report confirmed instances of CSAM.
+            </p>
+          </div>
+        </div>
+
+        <!-- INHOPE -->
+        <div class="reveal reveal-delay-1 alert shadow-lg bg-surface/80 border border-pulse/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">🌍</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">International Reporting (INHOPE)</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              Outside the U.S., reports can be made through the INHOPE network of national hotlines at <a href="https://www.inhope.org" target="_blank" rel="noopener noreferrer" class="text-spark hover:text-spark/80 underline">inhope.org</a>, which routes CSAM reports to the correct country.
+            </p>
+          </div>
+        </div>
+
+        <!-- Local-first support -->
+        <div class="reveal reveal-delay-2 alert shadow-lg bg-surface/80 border border-glow/15 rounded-2xl">
+          <div class="flex-shrink-0 text-3xl">📨</div>
+          <div>
+            <h3 class="font-display font-700 text-lg mb-1">Contact Our Safety Team</h3>
+            <p class="text-white/65 text-sm leading-relaxed">
+              For serious safety concerns or to report violations of our standards, contact our designated <span class="text-white/90 font-medium">Safety Point of Contact</span> at <a href="mailto:safety@flirt.spot" class="text-spark hover:text-spark/80 underline">safety@flirt.spot</a>. Urgent reports involving minors are handled as our top priority.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════ -->
+  <footer class="relative border-t border-white/5 bg-surface/50 py-16">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="reveal font-display font-800 text-3xl md:text-5xl mb-4">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Child Safety</span> is Everyone's Job
+      </h2>
+      <p class="reveal reveal-delay-1 text-white/65 mb-10 max-w-2xl mx-auto">If you see something, report it — in-app or to <a href="mailto:safety@flirt.spot" class="text-spark hover:text-spark/80 underline">safety@flirt.spot</a>. There is no place for minors or child exploitation on FlirtSpot.</p>
+
+      <div class="reveal reveal-delay-4 text-white/20 text-xs space-y-2">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
+          <a href="index.html" class="text-spark/60 hover:text-spark transition-colors">← Back to Home</a>
+          <span class="text-white/10">|</span>
+          <a href="privacy.html" class="text-spark/60 hover:text-spark transition-colors">Privacy Promise</a>
+          <span class="text-white/10">|</span>
+          <a href="terms.html" class="text-spark/60 hover:text-spark transition-colors">Terms of Service</a>
+          <span class="text-white/10">|</span>
+          <a href="deleteaccount.html" class="text-spark/60 hover:text-spark transition-colors">Delete Account &amp; Data</a>
+        </div>
+        <p class="pt-4 text-white/10">© 2024 FlirtSpot. Built for the moment — never for minors.</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Scroll Reveal JS -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

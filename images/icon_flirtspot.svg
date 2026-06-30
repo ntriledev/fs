@@ -1,0 +1,71 @@
+<svg width="512" height="512" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Large outer circle -->
+  <circle cx="512" cy="512" r="510" fill="skyblue"/>
+  
+ 
+  
+  <!-- Top Heart (Upside Down) 
+       Start: 512 50
+       End: 512 400
+       Control points pull down (y=200 and y=600) to create the hanging lobes.
+  -->
+  <path d="M 512 10 C 0 155 0 445 512 472 C 1024 445 1024 155 512 10 Z" 
+        fill="lightblue" stroke-linejoin="round"/>
+
+ <!-- White center circle -->
+  <circle cx="512" cy="512" r="51" fill="white"/>
+
+   <!-- First arc (radius 200) -->
+  <path d="M 338.8 412 A 200 200 0 0 1 685.2 412" 
+        fill="none" stroke="white" stroke-width="60" stroke-linecap="round" />
+  
+  <!-- Second arc (radius 400) -->
+  <path d="M 165.6 312 A 400 400 0 0 1 858.4 312" 
+        fill="none" stroke="white" stroke-width="60" stroke-linecap="round" />
+
+  <defs>
+    <!-- Define a gradient that is Red at the top and Transparent at the bottom -->
+    <linearGradient id="fade-stroke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="darkred" />
+      <stop offset="25%" stop-color="darkred" />
+      <stop offset="45%" stop-color="lightcoral" />
+      <stop offset="85%" stop-color="red" />
+    </linearGradient>
+
+    <linearGradient id="top-stroke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="red" />
+      <stop offset="15%" stop-color="red" />
+      <stop offset="45%" stop-color="none" />
+      <stop offset="85%" stop-color="none" />
+    </linearGradient>
+  </defs>
+
+  <!-- Heart 
+       Start: 512 974 (50 from bottom)
+       End: 512 512 (Middle)
+       Control points create the lobes.
+  -->
+ <path transform="rotate(-13,512,637) translate(-118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" 
+        fill="none" 
+        stroke="url(#fade-stroke)" 
+        stroke-width="60" stroke-linejoin="round"/>
+
+
+<path transform="rotate(13,512,637) translate(118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" 
+        fill="none" 
+        stroke="url(#fade-stroke)" 
+        stroke-width="60" stroke-linejoin="round"/>
+
+ <!--
+ <path transform="rotate(-13,512,637) translate(-118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" 
+        fill="none" 
+        stroke="url(#top-stroke)" 
+        stroke-width="30" stroke-linejoin="round"/>
+
+
+<path transform="rotate(13,512,637) translate(118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" 
+        fill="none" 
+        stroke="url(#top-stroke)" 
+        stroke-width="30" stroke-linejoin="round"/>
+          -->
+</svg>

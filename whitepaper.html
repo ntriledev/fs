@@ -14,7 +14,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- DaisyUI -->
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <link rel="icon" type="image/svg+xml" href="icon_flirtspot.svg" />
+  <link rel="icon" type="image/svg+xml" href="images/icon_flirtspot.svg" />
 
   <script>
     tailwind.config = {
@@ -302,7 +302,7 @@
 
   <!-- Fixed top-left icon (link back to home) -->
   <a href="index.html" class="fixed top-4 left-4 z-50 hover:opacity-80 transition-opacity">
-    <img src="icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
+    <img src="images/icon_flirtspot.svg" alt="FlirtSpot" class="h-10 w-10" />
   </a>
 
   <!-- Back to home -->
@@ -334,7 +334,7 @@
 
       <!-- Subtitle -->
       <p class="reveal reveal-delay-2 text-lg md:text-xl text-white/70 max-w-2xl mx-auto font-light leading-relaxed mb-8">
-        The complete technical specification of the <span class="text-white font-medium">Zero-Persistence</span> architecture — identity standards, dual-mode networking, and forensic data sanitization.
+        The complete technical specification of the <span class="text-white font-medium">Self-Cleaning</span> architecture — anonymous profiles, identity standards, dual-mode networking, 24-hour auto-wipe, and forensic data sanitization.
       </p>
 
       <!-- Meta row -->
@@ -369,7 +369,7 @@
             <span class="text-spark font-mono mr-2">04</span> Local Data Persistence
           </a>
           <a href="#server" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
-            <span class="text-spark font-mono mr-2">05</span> Server-Side Forgetfulness
+            <span class="text-spark font-mono mr-2">05</span> Server-Side Self-Cleaning
           </a>
           <a href="#compliance" class="toc-link block text-white/60 hover:text-spark py-2 pl-3 text-base no-underline">
             <span class="text-spark font-mono mr-2">06</span> Versioning & Compliance
@@ -391,18 +391,18 @@
           01
         </div>
         <h2 class="font-display font-800 text-2xl md:text-4xl">
-          Identity & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Addressing</span> Standard
+          Identity & <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Anonymous Profiles</span>
         </h2>
       </div>
 
       <div class="reveal reveal-delay-1 text-white/70 leading-relaxed space-y-5 mb-10">
         <p>
-          FlirtSpot utilizes <span class="text-white font-medium">UUID version 7</span> for peer identification. Unlike standard random UUIDs, version 7 is time-ordered, providing two primary benefits:
+          FlirtSpot utilizes <span class="text-white font-medium">UUID version 7</span> for peer identification in anonymous profiles. Unlike standard random UUIDs, version 7 is time-ordered, providing two primary benefits:
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="stat-card gradient-border rounded-xl p-6 bg-surface/50">
-            <div class="text-spark font-display font-700 mb-2">Anonymous Indexing</div>
-            <p class="text-white/60 text-sm leading-relaxed">Efficient local database (Room) indexing without requiring a central registry or user metadata.</p>
+            <div class="text-spark font-display font-700 mb-2">Anonymous Profiles</div>
+            <p class="text-white/60 text-sm leading-relaxed">No personal information attached — no email, no phone, no social login. Anonymous by design.</p>
           </div>
           <div class="stat-card gradient-border rounded-xl p-6 bg-surface/50">
             <div class="text-pulse font-display font-700 mb-2">Chronological Integrity</div>
@@ -500,7 +500,7 @@
             </li>
             <li class="flex items-start gap-2">
               <span class="text-pulse mt-1">▸</span>
-              <span><span class="text-white/90 font-medium">Infrastructure:</span> Proprietary relay servers operating on a Zero-Disk Policy. All traffic handled in volatile RAM; no logs or databases</span>
+              <span><span class="text-white/90 font-medium">Infrastructure:</span> Proprietary relay servers operating on a Zero-Disk Policy. All traffic handled in volatile RAM; user data (username, selfie) auto-wiped 24h after last activity</span>
             </li>
           </ul>
         </div>
@@ -549,7 +549,7 @@
 
       <div class="reveal reveal-delay-1 text-white/70 leading-relaxed mb-10">
         <p>
-          FlirtSpot does not rely on simple file deletion. We implement a <span class="text-white font-medium">Forensic Wipe Protocol</span> to prevent data recovery from physical storage.
+          FlirtSpot does not rely on simple file deletion. We implement a <span class="text-white font-medium">Forensic Wipe Protocol</span> to prevent data recovery from physical storage. User data from anonymous profiles (username and selfie) is automatically wiped 24 hours after last activity, or can be instantly erased via the <span class="text-spark font-medium">Delete Profile</span> button on the profile page.
         </p>
       </div>
 
@@ -613,7 +613,9 @@
         <div class="flex flex-col md:flex-row items-stretch gap-4">
           <!-- Ingress -->
           <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
-            <div class="text-2xl mb-2">📥</div>
+            <div class="text-2xl mb-2 text-green-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            </div>
             <div class="font-display font-700 text-sm text-green-400 mb-1">Ingress</div>
             <div class="text-xs text-white/50">Encrypted cache write</div>
           </div>
@@ -621,7 +623,9 @@
           <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
           <!-- Display -->
           <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
-            <div class="text-2xl mb-2">👁️</div>
+            <div class="text-2xl mb-2 text-yellow-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </div>
             <div class="font-display font-700 text-sm text-yellow-400 mb-1">Display</div>
             <div class="text-xs text-white/50">60s countdown + FLAG_SECURE</div>
           </div>
@@ -629,7 +633,9 @@
           <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
           <!-- Overwrite -->
           <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
-            <div class="text-2xl mb-2">🔄</div>
+            <div class="text-2xl mb-2 text-spark">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
             <div class="font-display font-700 text-sm text-spark mb-1">Overwrite</div>
             <div class="text-xs text-white/50">3-pass random bit injection</div>
           </div>
@@ -637,7 +643,9 @@
           <div class="hidden md:flex items-center text-white/20 text-xl">→</div>
           <!-- Delete -->
           <div class="flex-1 gradient-border rounded-xl p-5 bg-surface/50 text-center">
-            <div class="text-2xl mb-2">💨</div>
+            <div class="text-2xl mb-2 text-red-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
             <div class="font-display font-700 text-sm text-red-400 mb-1">Gone</div>
             <div class="text-xs text-white/50">File descriptor destroyed</div>
           </div>
@@ -677,7 +685,7 @@
             <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-spark/10 border border-spark/20 flex items-center justify-center text-lg">👤</div>
             <div>
               <h4 class="font-display font-700 text-base text-white/90 mb-1">MyProfile</h4>
-              <p class="text-white/60 text-sm leading-relaxed">Encrypted local settings and <span class="text-white/80 font-medium">immutable gender ID</span>. Stored exclusively in the app's private sandbox.</p>
+              <p class="text-white/60 text-sm leading-relaxed">Encrypted local settings for your anonymous profile and <span class="text-white/80 font-medium">immutable gender ID</span>. Stored exclusively in the app's private sandbox. Auto-wiped 24 hours after last activity, or instantly via the Delete Profile button.</p>
             </div>
           </div>
         </div>
@@ -688,7 +696,7 @@
             <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-pulse/10 border border-pulse/20 flex items-center justify-center text-lg">📡</div>
             <div>
               <h4 class="font-display font-700 text-base text-white/90 mb-1">DiscoveredPeers</h4>
-              <p class="text-white/60 text-sm leading-relaxed">Temporary cache of nearby signals. <span class="text-pulse font-medium">Purged on app close</span>. No persistent record of who you've encountered.</p>
+              <p class="text-white/60 text-sm leading-relaxed">Temporary cache of nearby signals discovered via automatic hardware handshake. <span class="text-pulse font-medium">Purged on app close</span>. No persistent record of who you've encountered.</p>
             </div>
           </div>
         </div>
@@ -699,7 +707,7 @@
             <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-glow/10 border border-glow/20 flex items-center justify-center text-lg">💬</div>
             <div>
               <h4 class="font-display font-700 text-base text-white/90 mb-1">MessageLog</h4>
-              <p class="text-white/60 text-sm leading-relaxed">Interaction history with <span class="text-white/80 font-medium">user-configurable retention</span>. You decide how long messages survive. Auto-wipe by default.</p>
+              <p class="text-white/60 text-sm leading-relaxed">Interaction history with <span class="text-white/80 font-medium">24-hour auto-wipe</span>. After 24 hours of inactivity, all message data is forensically wiped. Need it gone sooner? Hit Delete Profile in Settings to erase everything instantly.</p>
             </div>
           </div>
         </div>
@@ -731,7 +739,7 @@
 
 
   <!-- ═══════════════════════════════════════ -->
-  <!-- SECTION 6: Server-Side Forgetfulness -->
+  <!-- SECTION 6: Server-Side Self-Cleaning -->
   <!-- ═══════════════════════════════════════ -->
   <section id="server" class="relative py-20 md:py-28">
     <div class="max-w-4xl mx-auto px-6">
@@ -740,13 +748,13 @@
           05
         </div>
         <h2 class="font-display font-800 text-2xl md:text-4xl">
-          Server-Side <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Forgetfulness</span>
+          Server-Side <span class="text-transparent bg-clip-text bg-gradient-to-r from-spark to-pulse">Self-Cleaning</span>
         </h2>
       </div>
 
       <div class="reveal reveal-delay-1 text-white/70 leading-relaxed mb-10">
         <p>
-          Our relay servers are engineered to be <span class="text-white font-medium">stateless</span>. When a user disconnects:
+          Our relay servers retain your anonymous profile's username and selfie for up to <span class="text-white font-medium">24 hours after your last activity</span>, then everything is auto-wiped. You can also trigger an immediate wipe at any time using the <span class="text-spark font-medium">Delete Profile</span> button in Settings — this erases your data from both the device and the server without waiting.
         </p>
       </div>
 
@@ -760,9 +768,9 @@
             1
           </div>
           <div class="flex-1">
-            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Connection Close Event</h3>
+            <h3 class="font-display font-700 text-lg md:text-xl mb-2">24-Hour Auto-Wipe</h3>
             <p class="text-white/65 leading-relaxed">
-              The WebSocket <code class="text-spark/80 bg-spark/5 px-2 py-0.5 rounded text-sm font-mono">onClose</code> event triggers an <span class="text-white/90 font-medium">immediate memory purge</span>.
+              The server automatically purges all session data, public keys, and tokens <span class="text-white/90 font-medium">24 hours after your last activity</span>. No manual action needed.
             </p>
           </div>
         </div>
@@ -773,9 +781,9 @@
             2
           </div>
           <div class="flex-1">
-            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Key & Token Erasure</h3>
+            <h3 class="font-display font-700 text-lg md:text-xl mb-2">Instant Delete Profile</h3>
             <p class="text-white/65 leading-relaxed">
-              Associated <span class="text-white/90 font-medium">Public Keys</span> and session tokens are erased from RAM. No traces remain in memory.
+              Don't want to wait? The <span class="text-white/90 font-medium">Delete Profile</span> button in Settings immediately erases your anonymous profile from both the device and the server — username, selfie, keys, everything.
             </p>
           </div>
         </div>
@@ -788,7 +796,7 @@
           <div class="flex-1">
             <h3 class="font-display font-700 text-lg md:text-xl mb-2">Total Amnesia</h3>
             <p class="text-white/65 leading-relaxed">
-              The server retains <span class="text-white/90 font-medium">no record</span> of the Peer ID or the duration of the connection. As if you were never there.
+              Once the 24-hour window expires or Delete Profile is triggered, the server retains <span class="text-white/90 font-medium">no record</span> of the Peer ID or the duration of the connection. As if you were never there.
             </p>
           </div>
         </div>
@@ -840,7 +848,9 @@
       <!-- Slack invite -->
       <div class="reveal reveal-delay-3">
         <a href="https://join.slack.com/t/flirtspot/shared_invite/zt-3z9iuw63k-ET2dk~nlLFiVwxodk33q4A" target="_blank" rel="noopener noreferrer" class="slack-link block rounded-2xl p-8 text-center no-underline">
-          <div class="text-3xl mb-3">💬</div>
+          <div class="text-3xl mb-3 text-glow">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
           <h3 class="font-display font-700 text-lg text-white/90 mb-2">Join the FlirtSpot Slack</h3>
           <p class="text-white/50 text-sm mb-4">Connect with the team, ask questions, and contribute to the project.</p>
           <span class="inline-flex items-center gap-2 text-spark font-display font-600 text-sm">
@@ -862,6 +872,8 @@
         <a href="index.html" class="text-spark/60 hover:text-spark transition-colors no-underline">← Home</a>
         <span class="text-white/10">|</span>
         <a href="privacy.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Privacy Promise</a>
+        <span class="text-white/10">|</span>
+        <a href="deleteaccount.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Delete Account & Data</a>
         <span class="text-white/10">|</span>
         <a href="terms.html" class="text-spark/60 hover:text-spark transition-colors no-underline">Terms of Service</a>
       </div>
