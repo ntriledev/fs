@@ -1,0 +1,81 @@
+<svg width="960" height="540" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg" font-family="'Liberation Sans','DejaVu Sans','Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <!-- Metallic graphite background -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a3f4a"/>
+      <stop offset="50%" stop-color="#22262e"/>
+      <stop offset="100%" stop-color="#14171c"/>
+    </linearGradient>
+    <!-- Metallic diagonal sheen -->
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.02"/>
+      <stop offset="60%" stop-color="#000000" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Brand glows -->
+    <radialGradient id="glowCyan" cx="50%" cy="16%" r="50%">
+      <stop offset="0%" stop-color="#00C6FF" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#0072FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowMag" cx="50%" cy="100%" r="55%">
+      <stop offset="0%" stop-color="#c850c0" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#c850c0" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00C6FF"/>
+      <stop offset="100%" stop-color="#0072FF"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF512F"/>
+      <stop offset="100%" stop-color="#F09819"/>
+    </linearGradient>
+
+    <linearGradient id="fade-stroke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B0000"/>
+      <stop offset="25%" stop-color="#8B0000"/>
+      <stop offset="45%" stop-color="#F08080"/>
+      <stop offset="85%" stop-color="#FF0000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background + metallic sheen + glows -->
+  <rect x="0" y="0" width="960" height="540" fill="url(#bgGrad)"/>
+  <rect x="0" y="0" width="960" height="540" fill="url(#sheen)"/>
+  <rect x="0" y="0" width="960" height="540" fill="url(#glowCyan)"/>
+  <rect x="0" y="0" width="960" height="540" fill="url(#glowMag)"/>
+
+  <!-- Thin silver frame -->
+  <rect x="6" y="6" width="948" height="528" rx="6" fill="none" stroke="#aab2bd" stroke-opacity="0.35" stroke-width="1"/>
+
+  <!-- === LOGO LOCKUP === -->
+  <g transform="translate(480,88) scale(0.126953125) translate(-512,-512)">
+    <circle cx="512" cy="512" r="510" fill="#7EC8E3"/>
+    <path d="M 512 10 C 0 155 0 445 512 472 C 1024 445 1024 155 512 10 Z" fill="#ADD8E6" stroke-linejoin="round"/>
+    <circle cx="512" cy="512" r="51" fill="white"/>
+    <path d="M 338.8 412 A 200 200 0 0 1 685.2 412" fill="none" stroke="white" stroke-width="60" stroke-linecap="round"/>
+    <path d="M 165.6 312 A 400 400 0 0 1 858.4 312" fill="none" stroke="white" stroke-width="60" stroke-linecap="round"/>
+    <path transform="rotate(-13,512,637) translate(-118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" fill="none" stroke="url(#fade-stroke)" stroke-width="60" stroke-linejoin="round"/>
+    <path transform="rotate(13,512,637) translate(118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" fill="none" stroke="url(#fade-stroke)" stroke-width="60" stroke-linejoin="round"/>
+  </g>
+
+  <text x="480" y="200" text-anchor="middle" font-size="52" font-weight="bold" letter-spacing="-1">
+    <tspan fill="url(#blueGrad)">Flirt</tspan><tspan fill="url(#redGrad)">Spot</tspan>
+  </text>
+
+  <!-- === HEADLINE === -->
+  <text x="480" y="300" text-anchor="middle" font-size="62" font-weight="bold" fill="#ffffff" letter-spacing="-1">À 150 m.</text>
+  <text x="480" y="368" text-anchor="middle" font-size="62" font-weight="bold" fill="url(#blueGrad)" letter-spacing="-1">Maintenant.</text>
+
+  <text x="480" y="410" text-anchor="middle" font-size="21" fill="#c5cdd8">Le radar des rencontres de proximité.</text>
+
+  <!-- === FOOTER === -->
+  <text x="34" y="513" font-size="22" font-weight="bold" fill="#eef2f7" letter-spacing="0.5">flirt.spot</text>
+
+  <g transform="translate(878,492)">
+    <rect x="0" y="0" width="70" height="30" rx="15" fill="#ffffff" fill-opacity="0.10" stroke="#ffffff" stroke-opacity="0.45"/>
+    <text x="35" y="21" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">18+</text>
+  </g>
+</svg>
