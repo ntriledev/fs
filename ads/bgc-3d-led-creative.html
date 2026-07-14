@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlirtSpot — BGC High Street 3D LED · 15s loop · v3 (life-celebrating)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     PALETTE — derived from logo_flirtspot.svg + icon_flirtspot.svg
+       FLIRT  : cyan #00C6FF -> royal #0072FF  (energy, wifi)
+       SPOT   : coral #FF512F -> gold #F09819  (warmth, joy, life)
+       HEART  : red #FF2D55 / #FF0000          (passion)
+       ICON   : sky #4FACFE / #87CEEB          (air, openness)
+     Warm orange + cyan = a vibrant, life-celebrating scheme.
+     Base stays dark (LED contrast) but with a warm plum undertone.
+     ============================================================ */
+  :root{
+    --midnight:#0a0610;
+    --surface:#160a1b;
+    --spark:#FF512F;     /* coral-orange — SPOT, the celebration hero */
+    --pulse:#F09819;     /* warm gold — joy, sunshine */
+    --glow:#FF2D55;      /* red-pink — hearts, passion */
+    --cyan:#00C6FF;      /* energy — FLIRT, sweep, HUD */
+    --sky:#4FACFE;       /* sky-blue ambient — wifi, icon sky */
+    --blue:#0072FF;      /* depth — FLIRT gradient */
+    --fg:#fff5ea;        /* warm white */
+    --muted:#c79a82;     /* warm muted gold-gray */
+    --T:15s;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:#07040a;
+    font-family:'DM Sans',system-ui,sans-serif;
+    color:var(--fg);
+    overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:18px;
+  }
+
+  .caption{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:#6b5a52;text-align:center;line-height:1.7;
+  }
+  .caption b{color:var(--spark)}
+
+  .screen{
+    position:relative;
+    width:min(94vw, calc((100vh - 150px) * 16 / 9));
+    aspect-ratio:16/9;
+    background:#000;
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:
+      0 0 0 1px #1a1020,
+      0 0 70px 6px rgba(255,81,47,.24),
+      0 0 180px 14px rgba(0,198,255,.18),
+      0 30px 90px rgba(0,0,0,.85);
+    isolation:isolate;
+    container-type:size;
+    container-name:screen;
+  }
+
+  /* ambient brand glow — warm coral + cyan, life-celebrating warmth */
+  .amb{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .amb .a,.amb .b{position:absolute;border-radius:50%;filter:blur(90px)}
+  .amb .a{width:60%;height:80%;left:-10%;top:-25%;
+    background:radial-gradient(circle,rgba(255,81,47,.42),transparent 65%);
+    animation:driftA var(--T) linear infinite}
+  .amb .b{width:52%;height:70%;right:-12%;bottom:-28%;
+    background:radial-gradient(circle,rgba(0,198,255,.40),transparent 65%);
+    animation:driftB var(--T) linear infinite}
+  @keyframes driftA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6%,5%) scale(1.08)}}
+  @keyframes driftB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-5%,-4%) scale(1.06)}}
+
+  .lip{
+    position:absolute;left:0;right:0;bottom:0;height:7%;z-index:9;
+    background:linear-gradient(180deg,transparent,rgba(255,81,47,.10));
+    border-top:1px solid rgba(255,45,85,.20);
+  }
+
+  /* =========================================================
+     1) LOGO OPEN  (0% – 17%)  → flirt.spot wordmark gleams in
+     ========================================================= */
+  .logo-open{
+    position:absolute;left:50%;top:50%;width:90%;z-index:7;
+    transform:translate(-50%,-50%);opacity:0;
+    animation:wmOpen var(--T) linear infinite;
+  }
+  .logo-open .wm{width:100%;height:auto;display:block;
+    filter:drop-shadow(0 8px 40px rgba(255,81,47,.50))}
+  .logo-open::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);
+    -webkit-background-size:280% 100%;background-size:280% 100%;
+    background-position:170% 0;mix-blend-mode:overlay;pointer-events:none;
+    animation:wmShine var(--T) linear infinite}
+  @keyframes wmOpen{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.9)}
+    3%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    14%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    17%{opacity:0;transform:translate(-50%,-50%) scale(1.03)}
+    100%{opacity:0}
+  }
+  @keyframes wmShine{
+    0%{background-position:170% 0}
+    4%{background-position:170% 0}
+    13%{background-position:-70% 0}
+    100%{background-position:-70% 0}
+  }
+
+  /* =========================================================
+     2) RADAR + MESSAGE  (17% – 68%)
+     ========================================================= */
+  .scene{position:absolute;inset:0;z-index:4;display:grid;place-items:center;perspective:1100px}
+  .radar{
+    position:relative;width:74%;aspect-ratio:1;
+    transform-style:preserve-3d;
+    transform:translateY(-7%) rotateX(62deg);
+    opacity:0;animation:radarLife var(--T) linear infinite;
+  }
+  @keyframes radarLife{
+    0%,16%{opacity:0}
+    18%{opacity:1}
+    66%{opacity:1}
+    71%{opacity:0}
+    100%{opacity:0}
+  }
+  .ring{position:absolute;left:50%;top:50%;border-radius:50%;
+    border:1.5px solid rgba(255,245,234,.14);transform:translate(-50%,-50%)}
+  .r1{width:100%;height:100%}.r2{width:74%;height:74%}
+  .r3{width:48%;height:48%}.r4{width:24%;height:24%;border-color:rgba(0,198,255,.35)}
+  .cross{position:absolute;inset:0}
+  .cross::before,.cross::after{content:"";position:absolute;background:rgba(255,245,234,.07)}
+  .cross::before{left:50%;top:0;bottom:0;width:1px}
+  .cross::after{top:50%;left:0;right:0;height:1px}
+
+  .sweep{
+    position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg,
+      rgba(255,81,47,0) 0deg, rgba(255,81,47,0) 285deg,
+      rgba(255,81,47,.06) 325deg, rgba(0,198,255,.55) 356deg, rgba(0,198,255,0) 360deg);
+    -webkit-mask:radial-gradient(circle,#000 0,#000 100%);mask:radial-gradient(circle,#000 0,#000 100%);
+    animation:sweepRot var(--T) linear infinite;
+  }
+  @keyframes sweepRot{
+    0%,16%{transform:rotate(0deg);opacity:0}
+    18%{opacity:1}
+    64%{transform:rotate(720deg);opacity:1}
+    70%{opacity:0}
+    100%{transform:rotate(720deg);opacity:0}
+  }
+
+  .you{
+    position:absolute;left:50%;top:50%;width:2.6%;aspect-ratio:1;border-radius:50%;
+    background:var(--fg);
+    transform:translate(-50%,-50%) rotateX(-62deg);
+    box-shadow:0 0 0 7px rgba(255,245,234,.10),0 0 26px 5px rgba(255,245,234,.55);
+    opacity:0;animation:youLife var(--T) linear infinite;
+  }
+  @keyframes youLife{
+    0%,17%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(0)}
+    19%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1.5)}
+    21%{transform:translate(-50%,-50%) rotateX(-62deg) scale(1)}
+    60%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1)}
+    68%{opacity:0}
+    100%{opacity:0}
+  }
+  .ping{position:absolute;left:50%;top:50%;width:100%;height:100%;
+    border-radius:50%;border:1.5px solid rgba(255,45,85,.42);
+    transform:translate(-50%,-50%) scale(.05);opacity:0;
+    animation:pingLife var(--T) linear infinite}
+  .ping.p2{animation-delay:-.9s}
+  @keyframes pingLife{
+    0%,19%{opacity:0;transform:translate(-50%,-50%) scale(.05)}
+    20%{opacity:.7}
+    30%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+  }
+
+  .blip{
+    position:absolute;width:1.5%;aspect-ratio:1;border-radius:50%;
+    transform:translate(-50%,-50%) rotateX(-62deg) scale(0);
+    background:var(--glow);
+    box-shadow:0 0 14px 2px var(--glow),0 0 34px 5px rgba(255,45,85,.6);
+    opacity:0;animation:blipLife var(--T) linear infinite;
+  }
+  .blip.c{background:var(--cyan);box-shadow:0 0 14px 2px var(--cyan),0 0 34px 5px rgba(0,198,255,.6)}
+  .b1{left:78%;top:34%;animation-delay:3.2s}
+  .b2{left:30%;top:72%;animation-delay:4.0s}
+  .b3{left:64%;top:80%;animation-delay:4.8s}
+  .b4{left:20%;top:42%;animation-delay:5.6s}
+  @keyframes blipLife{
+    0%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(0)}
+    1.5%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1.7)}
+    4%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1)}
+    9%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(.7)}
+    100%{opacity:0}
+  }
+  .target{left:78%;top:34%;animation-delay:3.2s;animation-name:targetLife}
+  @keyframes targetLife{
+    0%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(0)}
+    1.5%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1.7)}
+    4%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1)}
+    44%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1.15)}
+    48%{opacity:0}
+    100%{opacity:0}
+  }
+  .reticle{
+    position:absolute;left:78%;top:34%;width:6%;aspect-ratio:1;
+    transform:translate(-50%,-50%) rotateX(-62deg);opacity:0;
+    animation:reticleLife var(--T) linear infinite;animation-delay:3.2s;
+  }
+  .reticle::before,.reticle::after{content:"";position:absolute;inset:0;
+    border:2px solid var(--cyan);border-radius:50%;
+    box-shadow:0 0 12px rgba(0,198,255,.6)}
+  .reticle::after{inset:30%;border-color:var(--fg)}
+  @keyframes reticleLife{
+    0%,38%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(2.4)}
+    40%{opacity:1;transform:translate(-50%,-50%) rotateX(-62deg) scale(1)}
+    46%{opacity:.9}
+    49%{opacity:0;transform:translate(-50%,-50%) rotateX(-62deg) scale(.7)}
+    100%{opacity:0}
+  }
+
+  /* HUD readouts (radar window only) */
+  .hud{position:absolute;inset:0;z-index:6;pointer-events:none;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+    color:var(--muted);opacity:0;animation:hudLife var(--T) linear infinite}
+  @keyframes hudLife{
+    0%,16%{opacity:0}20%{opacity:.8}64%{opacity:.8}70%{opacity:0}100%{opacity:0}
+  }
+  .hud .tl{position:absolute;top:6%;left:5%;font-size:clamp(8px,1vw,16px);
+    letter-spacing:.22em;line-height:1.6}
+  .hud .tl b{color:var(--cyan)}
+  .hud .tr{position:absolute;top:6%;right:5%;font-size:clamp(8px,1vw,16px);
+    letter-spacing:.22em;text-align:right;line-height:1.6}
+  .hud .tr b{color:var(--spark)}
+  .hud .live{display:inline-block;width:.6em;height:.6em;border-radius:50%;
+    background:var(--glow);margin-right:.5em;vertical-align:middle;
+    box-shadow:0 0 0 0 rgba(255,45,85,.7);animation:dot 1.3s infinite}
+  @keyframes dot{0%{box-shadow:0 0 0 0 rgba(255,45,85,.6)}70%{box-shadow:0 0 0 .7em rgba(255,45,85,0)}100%{box-shadow:0 0 0 0 rgba(255,45,85,0)}}
+  .hud .dist{position:absolute;font-size:clamp(8px,.9vw,14px);color:var(--glow);
+    letter-spacing:.1em;transform:translate(-50%,-50%)}
+  .hud .d1{left:79%;top:30%}.hud .d2{left:31%;top:67%}
+  .hud .d3{left:65%;top:75%}.hud .d4{left:21%;top:37%}
+
+  /* ---- FRAME 1 (28–46%): "Match the vibe / anywhere anytime" ---- */
+  .message{
+    position:absolute;left:0;right:0;top:50%;z-index:7;text-align:center;
+    opacity:0;transform:translateY(-50%);
+    animation:messageLife var(--T) linear infinite;padding:0 5%;
+  }
+  /* scrim for legibility over the radar dish */
+  .message::before{content:"";position:absolute;inset:-40% -15% -25%;z-index:-1;
+    background:radial-gradient(ellipse 70% 90% at 50% 50%,rgba(10,6,16,.78),transparent 75%)}
+  .message .l1{display:block;font-family:'Syne',sans-serif;font-weight:800;
+    text-transform:uppercase;line-height:.92;letter-spacing:-.015em;
+    font-size:16cqmin;color:var(--fg);
+    text-shadow:0 0 40px rgba(0,0,0,.7);animation:mLine1 var(--T) linear infinite}
+  .message .l1b{display:block;font-family:'Syne',sans-serif;font-weight:800;
+    text-transform:uppercase;line-height:.92;letter-spacing:-.02em;
+    font-size:16cqmin;margin-top:.1em;
+    background:linear-gradient(180deg,#fff,var(--glow) 50%,var(--spark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 30px rgba(255,45,85,.50));
+    animation:mLine1 var(--T) linear infinite}
+  .message .sub{display:block;margin-top:.85em;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+    letter-spacing:.34em;font-size:2.4cqmin;color:var(--cyan);
+    opacity:0;animation:mSub var(--T) linear infinite}
+  @keyframes messageLife{
+    0%,27%{opacity:0}
+    30%{opacity:1}
+    45%{opacity:1}
+    47%{opacity:0}
+    100%{opacity:0}
+  }
+  @keyframes mLine1{
+    0%,28%{opacity:0;transform:translateY(14px)}
+    31%{opacity:1;transform:translateY(0)}
+    45%{opacity:1}
+    47%{opacity:0}
+    100%{opacity:0}
+  }
+  @keyframes mSub{
+    0%,34%{opacity:0}37%{opacity:.9}45%{opacity:.9}47%{opacity:0}100%{opacity:0}
+  }
+
+  /* ---- FRAME 2 (49–66%): "here & now" paired with the icon ---- */
+  .msg2{
+    position:absolute;left:0;right:0;top:63%;z-index:7;text-align:center;
+    opacity:0;transform:translateY(-50%);padding:0 5%;
+    font-family:'Syne',sans-serif;font-weight:800;text-transform:uppercase;
+    line-height:.9;letter-spacing:-.02em;font-size:22cqmin;
+    background:linear-gradient(180deg,#fff,var(--glow) 50%,var(--spark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 30px rgba(255,45,85,.55));
+    animation:msg2Life var(--T) linear infinite;
+  }
+  .msg2::before{content:"";position:absolute;inset:-40% -15% -25%;z-index:-1;
+    background:radial-gradient(ellipse 70% 90% at 50% 50%,rgba(10,6,16,.72),transparent 75%)}
+  @keyframes msg2Life{
+    0%,47%{opacity:0;transform:translateY(calc(-50% + 12px))}
+    50%{opacity:1;transform:translateY(-50%)}
+    64%{opacity:1;transform:translateY(-50%)}
+    67%{opacity:0;transform:translateY(calc(-50% - 8px))}
+    100%{opacity:0}
+  }
+
+  /* spark (you -> target) */
+  .spark{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
+    animation:sparkLife var(--T) linear infinite}
+  .spark svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .spark path{fill:none;stroke:var(--glow);stroke-width:3.5;stroke-linecap:round;
+    stroke-dasharray:1200;stroke-dashoffset:1200;
+    filter:drop-shadow(0 0 8px var(--glow));
+    animation:sparkDraw var(--T) linear infinite}
+  @keyframes sparkLife{
+    0%,42%{opacity:0}44%{opacity:1}48%{opacity:1}50%{opacity:0}100%{opacity:0}
+  }
+  @keyframes sparkDraw{
+    0%,42%{stroke-dashoffset:1200;stroke:var(--glow);stroke-width:3.5}
+    47%{stroke-dashoffset:0;stroke:var(--glow);stroke-width:3.5}
+    48%{stroke-dashoffset:0;stroke:#fff;stroke-width:6}
+    50%{stroke-dashoffset:0;stroke:#fff;stroke-width:6}
+    100%{stroke-dashoffset:0}
+  }
+
+  /* heart bloom — warm coral->red, life-celebrating passion */
+  .heart{
+    position:absolute;left:50%;top:36%;width:30cqh;height:30cqh;z-index:6;
+    transform:translate(-50%,-50%) scale(0);opacity:0;
+    animation:heartLife var(--T) linear infinite;
+    filter:drop-shadow(0 0 30px rgba(255,45,85,.70));
+  }
+  @keyframes heartLife{
+    0%,47%{opacity:0;transform:translate(-50%,-50%) scale(0)}
+    50%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}
+    54%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    66%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    70%{opacity:1;transform:translate(-50%,-50%) scale(1.5)}
+    78%{opacity:1;transform:translate(-50%,-50%) scale(2.7)}
+    81%{opacity:1;transform:translate(-50%,-50%) scale(2.7)}
+    86%{opacity:.4;transform:translate(-50%,-50%) scale(2.7)}
+    92%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}
+    100%{opacity:0}
+  }
+
+  /* =========================================================
+     3) CTA  (77% – 100%)  → Get the app at flirt.spot
+     ========================================================= */
+  .cta{
+    position:absolute;left:0;right:0;top:50%;z-index:8;
+    transform:translate(0,-50%);text-align:center;
+    opacity:0;animation:ctaLife var(--T) linear infinite;
+    padding:0 4%;
+  }
+  /* tiny radar ping behind the domain, ties it to the mechanic */
+  .cta .ping-bg{position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1;
+    transform:translate(-50%,-50%);z-index:-1;pointer-events:none}
+  .cta .ping-bg span{position:absolute;inset:0;border-radius:50%;
+    border:1.5px solid rgba(255,81,47,.30);
+    animation:ctaPing var(--T) linear infinite}
+  .cta .ping-bg span:nth-child(2){animation-delay:-1.1s}
+  @keyframes ctaPing{
+    0%,79%{transform:scale(.2);opacity:0}
+    83%{transform:scale(.5);opacity:.7}
+    94%{transform:scale(1.1);opacity:0}
+    100%{opacity:0}
+  }
+  .cta .cta-head{
+    font-family:'Syne',sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:20cqmin;line-height:.9;letter-spacing:-.02em;
+    background:linear-gradient(180deg,#ffffff 0%,var(--glow) 45%,var(--spark) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 30px rgba(255,45,85,.60));
+    animation:ctaGlow var(--T) linear infinite;
+  }
+  .cta .domain{
+    font-family:'Syne',sans-serif;font-weight:800;
+    font-size:25cqmin;line-height:1;letter-spacing:-.02em;margin-top:.1em;
+    color:#ffffff;
+    text-shadow:0 0 26px rgba(0,198,255,.4),0 0 60px rgba(0,114,255,.25);
+  }
+  .cta .domain .dot{color:var(--cyan);-webkit-text-fill-color:var(--cyan)}
+  .cta .cta-sub{margin-top:1em;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+    letter-spacing:.34em;font-size:2.4cqmin;color:var(--cyan)}
+  @keyframes ctaGlow{
+    0%,79%{filter:drop-shadow(0 0 0 rgba(255,45,85,0))}
+    83%{filter:drop-shadow(0 0 24px rgba(255,45,85,.50))}
+    88%{filter:drop-shadow(0 0 44px rgba(255,45,85,.90))}
+    94%{filter:drop-shadow(0 0 24px rgba(255,45,85,.55))}
+    97%{filter:drop-shadow(0 0 30px rgba(255,45,85,.50))}
+    100%{filter:drop-shadow(0 0 0 rgba(255,45,85,0))}
+  }
+  @keyframes ctaLife{
+    0%,79%{opacity:0;transform:translateY(-46%)}
+    83%{opacity:1;transform:translateY(-50%)}
+    97%{opacity:1;transform:translateY(-50%)}
+    100%{opacity:0;transform:translateY(-54%)}
+  }
+
+  .vignette{position:absolute;inset:0;z-index:9;pointer-events:none;
+    background:radial-gradient(ellipse 75% 70% at 50% 48%,transparent 55%,rgba(0,0,0,.55) 100%)}
+  .grain{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:.45;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  /* controls */
+  .controls{display:flex;gap:8px;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a6a5a;
+    letter-spacing:.16em;text-transform:uppercase}
+  .controls button{background:#1a1020;color:var(--fg);border:1px solid #3a2a30;
+    border-radius:6px;padding:7px 14px;cursor:pointer;font:inherit;letter-spacing:inherit}
+  .controls button:hover{border-color:var(--spark)}
+  .controls .tc{min-width:74px;text-align:center;color:var(--cyan)}
+  .controls .beat{min-width:150px;color:var(--spark)}
+  body.paused *{animation-play-state:paused !important}
+</style>
+</head>
+<body>
+
+  <div class="caption">
+    <b>FLIRTSPOT</b> — BGC HIGH STREET 3D LED · 15.0s LOOP · 1920×1080 · v3
+  </div>
+
+  <div class="screen" id="screen">
+    <div class="amb"><div class="a"></div><div class="b"></div></div>
+
+    <!-- ===== 1. LOGO OPEN ===== -->
+    <div class="logo-open">
+      <svg class="wm" viewBox="0 0 650 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="o_blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00C6FF"/><stop offset="1" stop-color="#0072FF"/></linearGradient>
+          <linearGradient id="o_red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF512F"/><stop offset="1" stop-color="#F09819"/></linearGradient>
+          <linearGradient id="o_wifi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FACFE"/><stop offset="1" stop-color="#00F2FE"/></linearGradient>
+        </defs>
+        <g transform="translate(20,60)">
+          <path d="M25 100 L25 30 Q25 0 55 0 H65 V20 H55 Q43 20 43 30 L43 40 H65 V60 H43 L43 100 H25 Z" fill="url(#o_blue)"/>
+          <path d="M80 0 H98 V100 H80 Z" fill="url(#o_blue)"/>
+          <g transform="translate(110)">
+            <path d="M10 40 H28 V100 H10 Z" fill="url(#o_blue)"/>
+            <path d="M19 -5 C19 -5 35 -20 44 -11 C50 -5 50 5 44 13 L19 37 L-6 13 C-12 5 -12 -5 -6 -11 C3 -20 19 -5 19 -5 Z" fill="#ff2d55"/>
+          </g>
+          <path d="M155 100 V40 H173 V55 Q173 40 195 40 V60 Q180 60 173 70 V100 H155 Z" fill="url(#o_blue)"/>
+          <path d="M215 100 V40 H200 V20 H215 V5 H233 V20 H250 V40 H233 V90 Q233 100 243 100 H250 V115 H240 Q215 115 215 100 Z" fill="url(#o_blue)"/>
+        </g>
+        <g transform="translate(310,160)">
+          <circle cx="0" cy="0" r="15" fill="#003a8c"/>
+          <path d="M-18 -15 A25 25 0 0 1 18 -15" fill="none" stroke="url(#o_wifi)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M-30 -30 A45 45 0 0 1 30 -30" fill="none" stroke="url(#o_wifi)" stroke-width="8" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(320,60)">
+          <path d="M55 40 C75 40 80 55 80 60 H62 C62 55 60 53 55 53 C48 53 45 56 45 60 C45 65 50 67 58 69 L62 70 C78 74 82 85 82 92 C82 108 70 115 55 115 C35 115 28 100 28 95 H46 C46 100 48 103 55 103 C62 103 65 99 65 94 C65 88 60 86 52 84 L48 83 C32 79 28 68 28 60 C28 45 40 40 55 40 Z" fill="url(#o_red)"/>
+          <path d="M95 40 H113 V53 Q118 40 135 40 Q155 40 155 75 Q155 110 135 110 Q118 110 113 97 V140 H95 V40 Z M113 75 Q113 95 125 95 Q137 95 137 75 Q137 55 125 55 Q113 55 113 75 Z" fill="url(#o_red)"/>
+          <path d="M165 75 Q165 40 200 40 Q235 40 235 75 Q235 110 200 110 Q165 110 165 75 Z M183 75 Q183 95 200 95 Q217 95 217 75 Q217 55 200 55 Q183 55 183 75 Z" fill="url(#o_red)"/>
+          <path d="M260 100 V40 H245 V20 H260 V5 H278 V20 H295 V40 H278 V90 Q278 100 288 100 H295 V115 H285 Q260 115 260 100 Z" fill="url(#o_red)"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ===== HUD (radar window) ===== -->
+    <div class="hud">
+      <div class="tl"><span class="live"></span>RADAR<br><b>// FLIRTSPOT</b></div>
+      <div class="tr">150M RADIUS<br><b>BGC · LIVE</b></div>
+      <div class="dist d1">42M</div>
+      <div class="dist d2">88M</div>
+      <div class="dist d3">120M</div>
+      <div class="dist d4">63M</div>
+    </div>
+
+    <!-- ===== 2. RADAR ===== -->
+    <div class="scene">
+      <div class="radar">
+        <div class="ring r1"></div><div class="ring r2"></div>
+        <div class="ring r3"></div><div class="ring r4"></div>
+        <div class="cross"></div>
+        <div class="sweep"></div>
+        <div class="ping"></div><div class="ping p2"></div>
+        <div class="you"></div>
+        <div class="blip c b1"></div>
+        <div class="blip b2"></div>
+        <div class="blip c b3"></div>
+        <div class="blip b4"></div>
+        <div class="reticle"></div>
+      </div>
+    </div>
+
+    <!-- spark -->
+    <div class="spark">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
+        <path d="M 960 420 Q 1230 320 1500 300"/>
+      </svg>
+    </div>
+
+    <!-- FlirtSpot app icon — identical to images/icon_flirtspot.svg -->
+    <div class="heart">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ic-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="darkred"/>
+            <stop offset="25%" stop-color="darkred"/>
+            <stop offset="45%" stop-color="lightcoral"/>
+            <stop offset="85%" stop-color="red"/>
+          </linearGradient>
+        </defs>
+        <!-- Large outer circle -->
+        <circle cx="512" cy="512" r="510" fill="skyblue"/>
+        <!-- Top heart (upside down) -->
+        <path d="M 512 10 C 0 155 0 445 512 472 C 1024 445 1024 155 512 10 Z" fill="lightblue" stroke-linejoin="round"/>
+        <!-- White center circle -->
+        <circle cx="512" cy="512" r="51" fill="white"/>
+        <!-- First arc (radius 200) -->
+        <path d="M 338.8 412 A 200 200 0 0 1 685.2 412" fill="none" stroke="white" stroke-width="60" stroke-linecap="round"/>
+        <!-- Second arc (radius 400) -->
+        <path d="M 165.6 312 A 400 400 0 0 1 858.4 312" fill="none" stroke="white" stroke-width="60" stroke-linecap="round"/>
+        <!-- Heart lobes -->
+        <path transform="rotate(-13,512,637) translate(-118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" fill="none" stroke="url(#ic-fade)" stroke-width="60" stroke-linejoin="round"/>
+        <path transform="rotate(13,512,637) translate(118,-40)" d="M 512 1000 C 140 900 140 300 512 512 C 884 300 884 900 512 1000 Z" fill="none" stroke="url(#ic-fade)" stroke-width="60" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- ===== FRAME 1: match the vibe ===== -->
+    <div class="message">
+      <span class="l1">Match the vibe</span>
+      <span class="l1b">anywhere anytime</span>
+      <span class="sub">anonymous &middot; self-cleaning</span>
+    </div>
+
+    <!-- ===== FRAME 2: here & now (with icon) ===== -->
+    <div class="msg2">here &amp; now</div>
+
+    <!-- ===== 3. CTA ===== -->
+    <div class="cta">
+      <div class="ping-bg"><span></span><span></span></div>
+      <div class="cta-head">Get the app</div>
+      <div class="domain">flirt<span class="dot">.</span>spot</div>
+      <div class="cta-sub">free · 18+ · anonymous</div>
+    </div>
+
+    <div class="lip"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div class="controls">
+    <button id="play">❚❚ pause</button>
+    <button id="restart">↺ restart</button>
+    <span class="tc" id="tc">0.0s</span>
+    <span class="beat" id="beat">— logo</span>
+  </div>
+
+<script>
+  const body=document.body, tc=document.getElementById('tc'), beat=document.getElementById('beat');
+  const beats=[
+    [0,'— logo'],
+    [17,'— radar'],
+    [28,'— match the vibe'],
+    [48,'— here & now + icon'],
+    [70,'— icon fills screen'],
+    [83,'— CTA']
+  ];
+  let start=performance.now();
+  function loop(){
+    let t=((performance.now()-start)/1000)%15;
+    tc.textContent=t.toFixed(1)+'s';
+    let label=beats[0][1];
+    for(const [p,l] of beats) if(t>=p*0.15) label=l;
+    beat.textContent=label;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById('play').onclick=function(){
+    body.classList.toggle('paused');
+    this.textContent=body.classList.contains('paused')?'▶ play':'❚❚ pause';
+  };
+  document.getElementById('restart').onclick=function(){
+    const s=document.getElementById('screen');
+    const ns=s.cloneNode(true); s.replaceWith(ns); ns.id='screen';
+    start=performance.now();
+  };
+</script>
+</body>
+</html>
