@@ -4,3 +4,12 @@ dist/
 # Windows downloaded-file metadata (junk)
 *Zone.Identifier
 .superpowers/
+
+# Python
+__pycache__/
+
+# Node
+node_modules/
+
+# Video build intermediates (frames)
+ads/bradford-d6/build/
